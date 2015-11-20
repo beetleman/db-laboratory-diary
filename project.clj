@@ -1,5 +1,5 @@
 (defproject db-laboratory-diary "0.1.0-SNAPSHOT"
-  :description "FIXME: write description"
+  :description "Study project"
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
@@ -17,9 +17,7 @@
                  [environ "1.0.1"]
                  [org.clojure/clojurescript "1.7.170" :scope "provided"]
                  [secretary "1.2.3"]
-                 [venantius/accountant "0.1.4"]
-                 
-                 ]
+                 [venantius/accountant "0.1.4"]]
 
   :plugins [[lein-environ "1.0.1"]
             [lein-cljsbuild "1.1.1"]
@@ -43,7 +41,7 @@
 
   :minify-assets
   {:assets
-    {"resources/public/css/site.min.css" "resources/public/css/site.css"}}
+   {"resources/public/css/site.min.css" "resources/public/css/site.css"}}
 
   :cljsbuild {:builds {:app {:source-paths ["src/cljs" "src/cljc"]
                              :compiler {:output-to "target/cljsbuild/public/js/app.js"
@@ -67,7 +65,6 @@
                    :plugins [[lein-figwheel "0.5.0-SNAPSHOT"]
                              [cider/cider-nrepl "0.10.0-SNAPSHOT"]
                              [refactor-nrepl "2.0.0-SNAPSHOT"]
-                             
                              [lein-less "1.7.5"]]
 
                    :injections [(require 'pjstadig.humane-test-output)
@@ -101,7 +98,7 @@
                        :omit-source true
                        :cljsbuild {:jar true
                                    :builds {:app
-                                             {:source-paths ["env/prod/cljs"]
-                                              :compiler
-                                              {:optimizations :advanced
-                                               :pretty-print false}}}}}})
+                                            {:source-paths ["env/prod/cljs"]
+                                             :compiler
+                                             {:optimizations :advanced
+                                              :pretty-print false}}}}}})
