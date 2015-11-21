@@ -12,6 +12,10 @@
                  [ring "1.4.0"]
                  [ring/ring-defaults "0.1.5"]
                  [ring/ring-json "0.4.0"]
+                 [org.xerial/sqlite-jdbc "3.7.2"]
+                 [org.clojure/java.jdbc "0.4.2"]
+                 [yesql "0.5.1"]
+                 [migratus "0.8.4"]
                  [prone "0.8.2"]
                  [compojure "1.4.0"]
                  [hiccup "1.0.5"]
@@ -21,8 +25,15 @@
                  [venantius/accountant "0.1.4"]]
 
   :plugins [[lein-environ "1.0.1"]
+            [migratus-lein "0.1.7"]
             [lein-cljsbuild "1.1.1"]
             [lein-asset-minifier "0.2.2"]]
+
+  :migratus {:store :database
+             :migration-dir "db/migrations/"
+             :db {:classname "com.mysql.jdbc.Driver"
+                  :subprotocol "sqlite"
+                  :subname "sqlite.db"}}
 
   :ring {:handler db-laboratory-diary.handler/app
          :uberwar-name "db-laboratory-diary.war"}
