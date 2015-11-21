@@ -6,12 +6,13 @@
             [ring.util.response :refer [response]]
             [prone.middleware :refer [wrap-exceptions]]
             [ring.middleware.reload :refer [wrap-reload]]
-            [environ.core :refer [env]]))
+            [environ.core :refer [env]]
+            [db-laboratory-diary.db :as db]))
 
 
 (defroutes api-routes
   (context "/api" []
-           (GET "/about" [] (response {:name "db-laboratory-diary"
+           (GET "/about" [] (response {:name "db-laboratory-diary-api"
                                        :version "0.0.1"}))))
 
 (def api
