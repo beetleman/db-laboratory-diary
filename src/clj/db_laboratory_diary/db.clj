@@ -11,4 +11,24 @@
    })
 
 (defquery tables "db/tables.sql" {:connection db})
+
+
+;; PASSWORD
+
+(defn hash-password
+  "hash passwprd using sha1"
+  [to-hash]
+  (apply str
+         (map (partial format "%02x")
+              (.digest (doto (java.security.MessageDigest/getInstance "sha1")
+                         .reset
+                         (.update (.getBytes to-hash)))))))
+
+(defn password-is-eq?
+  "compare password with hash"
+  [password hashed]
+  (= (hash-password password) hashed))
+
+
+;; USERS
 (defqueries "db/users.sql" {:connection db})
