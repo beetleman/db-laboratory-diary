@@ -1,5 +1,5 @@
 (ns db-laboratory-diary.db
-  (:require [yesql.core :refer [defquery]]
+  (:require [yesql.core :refer [defquery defqueries]]
             [environ.core :refer [env]]))
 
 (def db
@@ -11,3 +11,4 @@
    })
 
 (defquery tables "db/tables.sql" {:connection db})
+(defqueries "db/users.sql" {:connection db})
