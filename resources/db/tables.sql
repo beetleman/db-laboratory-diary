@@ -1,2 +1,6 @@
 -- list of all tables in my db
-SELECT name FROM sqlite_master WHERE type='table';
+SELECT *
+FROM information_schema.tables
+     WHERE table_type = 'BASE TABLE'
+           AND table_schema = 'public'
+ORDER BY table_type, table_name;
