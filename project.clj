@@ -31,7 +31,7 @@
 
   :migratus {:store :database
              :migration-dir "db/migrations/"
-             :db {:classname "com.mysql.jdbc.Driver"
+             :db {:classname "org.sqlite.JDBC"
                   :subprotocol "sqlite"
                   :subname "sqlite.db"}}
 
