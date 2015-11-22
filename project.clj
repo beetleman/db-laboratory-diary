@@ -92,20 +92,22 @@
                               :css-dirs ["resources/public/css"]
                               :ring-handler db-laboratory-diary.handler/app}
 
-                   :env {:dev true}
+                   :env {:dev true
+                         :db {:classname "org.sqlite.JDBC"
+                              :subprotocol "sqlite"
+                              :subname "sqlite.db"}}
 
                    :cljsbuild {:builds {:app {:source-paths ["env/dev/cljs"]
                                               :compiler {:main "db-laboratory-diary.dev"
                                                          :source-map true}}
-
-
-                                        }
-
-                               }}
+                                        }}}
 
              :uberjar {:hooks [minify-assets.plugin/hooks]
                        :prep-tasks ["compile" ["cljsbuild" "once"]]
-                       :env {:production true}
+                       :env {:production true
+                             :db {:classname "org.sqlite.JDBC"
+                                  :subprotocol "sqlite"
+                                  :subname "sqlite.db"}}
                        :aot :all
                        :omit-source true
                        :cljsbuild {:jar true
