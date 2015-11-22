@@ -12,7 +12,7 @@
                  [ring "1.4.0"]
                  [ring/ring-defaults "0.1.5"]
                  [ring/ring-json "0.4.0"]
-                 [org.xerial/sqlite-jdbc "3.7.2"]
+                 [org.postgresql/postgresql "9.4-1201-jdbc41"]
                  [org.clojure/java.jdbc "0.4.2"]
                  [yesql "0.5.1"]
                  [migratus "0.8.4"]
@@ -31,9 +31,11 @@
 
   :migratus {:store :database
              :migration-dir "db/migrations/"
-             :db {:classname "org.sqlite.JDBC"
-                  :subprotocol "sqlite"
-                  :subname "sqlite.db"}}
+             :db {:classname "org.postgresql.Driver"
+                  :subprotocol "postgresql"
+                  :user "db_laboratory_diary"
+                  :password ~(get (System/getenv) "DATABASE_PASSWORD" "qwerty")
+                  :subname "//localhost:5432/db_laboratory_diary"}}
 
   :ring {:handler db-laboratory-diary.handler/app
          :uberwar-name "db-laboratory-diary.war"}
@@ -93,9 +95,11 @@
                               :ring-handler db-laboratory-diary.handler/app}
 
                    :env {:dev true
-                         :db {:classname "org.sqlite.JDBC"
-                              :subprotocol "sqlite"
-                              :subname "sqlite.db"}}
+                         :db {:classname "org.postgresql.Driver"
+                              :subprotocol "postgresql"
+                              :user "db_laboratory_diary"
+                              :password ~(get (System/getenv) "DATABASE_PASSWORD" "qwerty")
+                              :subname "//localhost:5432/db_laboratory_diary"}}
 
                    :cljsbuild {:builds {:app {:source-paths ["env/dev/cljs"]
                                               :compiler {:main "db-laboratory-diary.dev"
@@ -105,9 +109,11 @@
              :uberjar {:hooks [minify-assets.plugin/hooks]
                        :prep-tasks ["compile" ["cljsbuild" "once"]]
                        :env {:production true
-                             :db {:classname "org.sqlite.JDBC"
-                                  :subprotocol "sqlite"
-                                  :subname "sqlite.db"}}
+                             :db {:classname "org.postgresql.Driver"
+                                  :subprotocol "postgresql"
+                                  :user "db_laboratory_diary"
+                                  :password ~(get (System/getenv) "DATABASE_PASSWORD")
+                                  :subname "//localhost:5432/db_laboratory_diary"}}
                        :aot :all
                        :omit-source true
                        :cljsbuild {:jar true
