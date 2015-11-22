@@ -1,9 +1,9 @@
 CREATE TABLE users (
-   id INTEGER PRIMARY KEY AUTOINCREMENT,
-   firstname CHAR(100),
-   lastname CHAR(100),
-   login CHAR(100) NOT NULL,
-   email CHAR(100),
-   password CHAR(40) NOT NULL, -- sha1
-   is_admin INTEGER NOT NULL CHECK (is_admin IN (0,1)) DEFAULT 0
-   );
+       id SERIAL PRIMARY KEY,
+       firstname VARCHAR(100),
+       lastname VARCHAR(100),
+       login VARCHAR(100) NOT NULL,
+       email VARCHAR(100),
+       password VARCHAR(40) NOT NULL, -- sha1
+       is_admin BOOLEAN NOT NULL DEFAULT TRUE
+);
