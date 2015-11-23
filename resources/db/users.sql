@@ -23,7 +23,7 @@ UPDATE users
            is_admin = :is_admin,
 WHERE id = :id
 
--- name: raw-users-create!
+-- name: raw-users-create<!
 -- create new user
 INSERT INTO users
        (firstname, lastname, login, email, password, is_admin)
