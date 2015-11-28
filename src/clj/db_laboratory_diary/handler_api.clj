@@ -13,6 +13,7 @@
 (defroutes api-routes
   (context "/api" []
            (GET "/about" [] (response {:name "db-laboratory-diary-api"
+                                       :tables (db/tables)
                                        :version "0.0.1"}))))
 
 (def api
