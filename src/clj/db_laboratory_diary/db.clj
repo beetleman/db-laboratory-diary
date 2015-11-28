@@ -2,7 +2,9 @@
   (:require [yesql.core :refer [defquery defqueries]]
             [environ.core :refer [env]]))
 
-(defquery tables "db/tables.sql" {:connection (env :db-url)})
+(def db (env :db-url))
+
+(defquery tables "db/tables.sql" {:connection db})
 
 
 ;; PASSWORD
