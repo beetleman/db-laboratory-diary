@@ -32,11 +32,9 @@
 
   :migratus {:store :database
              :migration-dir "db/migrations/"
-             :db {:classname "org.postgresql.Driver"
-                  :subprotocol "postgresql"
-                  :user "db_laboratory_diary"
-                  :password ~(get (System/getenv) "DATABASE_PASSWORD" "qwerty")
-                  :subname "//localhost:5432/db_laboratory_diary"}}
+             :db ~(get (System/getenv)
+                       "DATABASE_URL"
+                       "postgresql://db_laboratory_diary:qwerty@localhost:5432/db_laboratory_diary")}
 
   :ring {:handler db-laboratory-diary.handler/app
          :uberwar-name "db-laboratory-diary.war"}
@@ -96,11 +94,7 @@
                               :ring-handler db-laboratory-diary.handler/app}
 
                    :env {:dev true
-                         :db {:classname "org.postgresql.Driver"
-                              :subprotocol "postgresql"
-                              :user "db_laboratory_diary"
-                              :password ~(get (System/getenv) "DATABASE_PASSWORD" "qwerty")
-                              :subname "//localhost:5432/db_laboratory_diary"}}
+                         :db-url "postgresql://db_laboratory_diary:qwerty@localhost:5432/db_laboratory_diary"}
 
                    :cljsbuild {:builds {:app {:source-paths ["env/dev/cljs"]
                                               :compiler {:main "db-laboratory-diary.dev"
@@ -110,11 +104,8 @@
              :uberjar {:hooks [minify-assets.plugin/hooks]
                        :prep-tasks ["compile" ["cljsbuild" "once"]]
                        :env {:production true
-                             :db {:classname "org.postgresql.Driver"
-                                  :subprotocol "postgresql"
-                                  :user "db_laboratory_diary"
-                                  :password ~(get (System/getenv) "DATABASE_PASSWORD")
-                                  :subname "//localhost:5432/db_laboratory_diary"}}
+                             :db-url ~(get (System/getenv)
+                                           "DATABASE_URL")}
                        :aot :all
                        :omit-source true
                        :cljsbuild {:jar true
