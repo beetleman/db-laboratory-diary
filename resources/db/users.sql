@@ -14,20 +14,20 @@ SELECT * FROM users WHERE id = :id
 -- name: raw-users-save!
 -- update user
 UPDATE users
-       SET name = :name,
-           firstname = :firstname,
-           lastname = :lastname,
-           login = :login,
-           email = :email,
-           password = :password,
-           is_admin = :is_admin,
+SET name = :name,
+    firstname = :firstname,
+    lastname = :lastname,
+    login = :login,
+    email = :email,
+    password = :password,
+    is_admin = :is_admin,
 WHERE id = :id
 
 -- name: raw-users-create<!
 -- create new user
 INSERT INTO users
        (firstname, lastname, login, email, password, is_admin)
-       VALUES (:firstname, :lastname, :login, :email, :password, :is_admin)
+VALUES (:firstname, :lastname, :login, :email, :password, :is_admin)
 
 -- name: raw-users-delete!
 -- delete user
