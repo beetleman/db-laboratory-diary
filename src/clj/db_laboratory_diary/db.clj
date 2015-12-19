@@ -42,3 +42,8 @@
                    (hash-password (:password user))
                    (:password old-user))]
     (raw-users-save! (assoc new-user :password password))))
+
+
+;; EXPERIMENTS
+
+(defqueries "db/experiments.sql" {:connection db})
