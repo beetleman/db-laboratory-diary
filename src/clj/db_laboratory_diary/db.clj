@@ -25,8 +25,19 @@
 
 
 ;; USERS
-
 (defqueries "db/users.sql" {:connection db})
+
+(def default-admin-user
+  {:name "admin"
+   :firstname nil
+   :lastname nil
+   :login "admin"
+   :email "admin@fake.pl"
+   :password "qwerty1"
+   :is_admin true})
+
+(defn user-count []
+  (-> (raw-users-count) first :count))
 
 (defn users-create<!
   "create new user with hashing password"
@@ -42,6 +53,14 @@
                    (hash-password (:password user))
                    (:password old-user))]
     (raw-users-save! (assoc new-user :password password))))
+
+(defn default-admin-create<!
+  "if users table is empty create default admin with:
+  `login': `admin'
+  `passord': `qwerty1'"
+  []
+  (if (zero? (user-count))
+    (users-create<! default-admin-user)))
 
 
 ;; EXPERIMENTS
