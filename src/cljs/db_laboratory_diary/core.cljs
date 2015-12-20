@@ -5,8 +5,9 @@
             [accountant.core :as accountant]
             [ajax.core :refer [GET POST]]))
 
+
 ;; -------------------------
-;; Views
+;; API
 
 (def api
   "/api")
@@ -16,13 +17,55 @@
 (defn api-url [url]
   (str api "/" url))
 
+(defn api-fetch [url state-target]
+  (GET
+   (api-url url)
+   :keywords? true
+   :response-format :json
+   :handler (fn [response]
+              (swap! state assoc state-target response))))
+
+;; -------------------------
+;; Views
+
+(def header_links
+  [{:name "About" :href "/about"}
+   {:name "Home" :href "/"}])
+
+(defn header []
+  [:nav {:class "navbar navbar-inverse navbar-fixed-top"}
+   [:div {:class "container"}
+    [:div {:class "navbar-header"}
+     [:button {:type "button"
+               :class "navbar-toggle collapsed"
+               :data-toggle "collapse"
+               :data-target "#navbar"
+               :aria-expanded "false"
+               :aria-controls "navbar"}
+      [:span {:class "sr-only"}
+       "Toggle navigation"]
+      [:span {:class "icon-bar"}]
+      [:span {:class "icon-bar"}]
+      [:span {:class "icon-bar"}]]
+     [:a {:class "navbar-brand" :href "/"} (get-in @state [:about :name])]]
+    [:div {:class "collapse navbar-collapse" :id "navbar"}
+     (into [:ul {:class "nav navbar-nav"}]
+           (map (fn [a]
+                  (let [class (if (= (a :href) (@state :current-path))
+                                "active"
+                                "")]
+                    [:li {:class class}
+                     [:a {:href (:href a)} (:name a)]]))
+                header_links))]]])
+
 
 (defn home-page []
-  [:div [:h2 "Welcome to db-laboratory-diary"]
+  [:div {:class "container"}
+   [:h2 "Welcome to db-laboratory-diary"]
    [:div [:a {:href "/about"} "go to about page"]]])
 
 (defn about-page []
-  [:div
+  [:div {:class "container"}
    [:h2 "About"]
    [:ul
     [:li "Name: " (get-in @state [:about :name])]
@@ -34,23 +77,30 @@
    [:div [:a {:href "/"} "go to the home page"]]])
 
 (defn current-page []
-  [:div [(session/get :current-page)]])
+  [:div [header] [(session/get :current-page)]])
+
 
 ;; -------------------------
 ;; Routes
+(defn set-current-path []
+  (swap! state assoc :current-path
+         (aget js/window
+               "location"
+               "pathname")))
+
+(defn site [page & api-todo]
+  (let [todo (into [["about" :about]] api-todo)]
+    (doall (map (fn [a] (apply api-fetch a))
+                todo))
+    (set-current-path)
+    (session/put! :current-page page)))
 
 (secretary/defroute "/" []
-  (session/put! :current-page #'home-page))
+  (site #'home-page))
 
 (secretary/defroute "/about" []
-  (do
-    (GET
-     (api-url "about")
-     :keywords? true
-     :response-format :json
-     :handler (fn [response]
-                (swap! state assoc :about response)))
-    (session/put! :current-page #'about-page)))
+  (site #'about-page))
+
 
 ;; -------------------------
 ;; Initialize app
