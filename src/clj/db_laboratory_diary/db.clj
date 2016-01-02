@@ -31,7 +31,7 @@
   {:name "admin"
    :firstname nil
    :lastname nil
-   :login "admin"
+   :username "admin"
    :email "admin@fake.pl"
    :password "qwerty1"
    :is_admin true})
@@ -43,6 +43,16 @@
   "create new user with hashing password"
   [user]
   (raw-users-create<! (update user :password hash-password)))
+
+(defn user-all
+  ([]
+   (user-all false))
+  ([admin?]
+   (let [fields (if admin?
+                  [:id :username :lastname :firstname :is_admin :email]
+                  [:id :username :lastname :firstname])]
+     (map (fn [user] (select-keys user fields))
+          (raw-users-all)))))
 
 (defn users-save!
   "update user with hashing password"
@@ -56,7 +66,7 @@
 
 (defn default-admin-create<!
   "if users table is empty create default admin with:
-  `login': `admin'
+  `username': `admin'
   `passord': `qwerty1'"
   []
   (if (zero? (user-count))

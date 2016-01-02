@@ -10,6 +10,10 @@
             [db-laboratory-diary.db :as db]))
 
 
+(defn users [& fields]
+  (select-keys (db/raw-users-all)))
+
+
 (defroutes api-routes
   (context "/api" []
            (GET "/about" [] (response {:name "db-laboratory-diary-api"

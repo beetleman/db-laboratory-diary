@@ -46,7 +46,7 @@ where experiment = :experiment_id and laborant = :laborant_id
 
 -- name: raw-all-laborant-for-experiment
 -- get all laborant for experiment
-SELECT users.id, users.firstname, users.lastname, users.login,
+SELECT users.id, users.firstname, users.lastname, users.username,
        users.email, users.password, users.is_admin
 FROM users
 INNER JOIN laborants_experiments
