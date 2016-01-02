@@ -23,6 +23,7 @@
                  [org.clojure/clojurescript "1.7.170" :scope "provided"]
                  [secretary "1.2.3"]
                  [cljs-ajax "0.5.1"]
+                 [com.cemerick/friend "0.2.2-SNAPSHOT"]
                  [venantius/accountant "0.1.4"]]
 
   :plugins [[lein-environ "1.0.1"]
