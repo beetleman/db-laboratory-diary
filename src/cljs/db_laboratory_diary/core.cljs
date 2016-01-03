@@ -13,6 +13,7 @@
   "/api")
 
 (def state (atom {}))
+(add-watch state :logger #(-> %4 clj->js js/console.debug))
 
 (defn api-url [url]
   (str api "/" url))
