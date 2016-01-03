@@ -4,9 +4,12 @@
                                               wrap-defaults]]
             [ring.middleware.json :refer [wrap-json-body wrap-json-response]]
             [ring.util.response :refer [response]]
+            [cemerick.friend :as friend]
+            (cemerick.friend [workflows :as workflows])
             [prone.middleware :refer [wrap-exceptions]]
             [ring.middleware.reload :refer [wrap-reload]]
             [environ.core :refer [env]]
+            [db-laboratory-diary.auth :as auth]
             [db-laboratory-diary.db :as db]))
 
 
@@ -16,12 +19,22 @@
 
 (defroutes api-routes
   (context "/api" []
-           (GET "/about" [] (response {:name "db-laboratory-diary-api"
-                                       :tables (db/tables)
-                                       :version "0.0.1"}))))
+           (GET "/about" req (response {:name "db-laboratory-diary-api"
+                                        :tables (db/tables)
+                                        :identity (friend/identity req)
+                                        :version "0.0.1"}))
+           (context "/users" []
+                    (GET "/" [] (friend/authorize
+                                 #{::auth/user}
+                                 (response (db/user-all)))))))
+
 
 (def api
   (let [handler (wrap-defaults #'api-routes api-defaults)]
     (if (env :dev)
-      (-> handler wrap-reload wrap-json-response wrap-exceptions wrap-reload)
-      (-> handler wrap-reload wrap-json-response))))
+      (-> handler (friend/authenticate {:credential-fn auth/credential-fn
+                                        :workflows [(workflows/http-basic)]})
+          wrap-reload wrap-json-response wrap-exceptions wrap-reload)
+      (-> handler (friend/authenticate {:credential-fn auth/credential-fn
+                                        :workflows [(workflows/http-basic)]})
+          wrap-reload wrap-json-response))))

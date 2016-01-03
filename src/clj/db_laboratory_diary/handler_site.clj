@@ -1,9 +1,10 @@
 (ns db-laboratory-diary.handler-site
-  (:require [compojure.core :refer [GET defroutes]]
+  (:require [compojure.core :refer [GET ANY POST defroutes]]
             [compojure.route :refer [not-found resources]]
             [ring.middleware.defaults :refer [site-defaults
                                               wrap-defaults]]
             [hiccup.core :refer [html]]
+            [cemerick.friend :as friend]
             [hiccup.page :refer [include-js include-css]]
             [prone.middleware :refer [wrap-exceptions]]
             [ring.middleware.reload :refer [wrap-reload]]
@@ -50,6 +51,7 @@
 (defroutes site-routes
   (GET "/" [] loading-page)
   (GET "/about" [] loading-page)
+  (friend/logout (ANY "/logout" request (ring.util.response/redirect "/")))
   (resources "/"))
 
 (def site

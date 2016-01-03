@@ -11,6 +11,10 @@ SELECT * FROM users
 -- get user by id
 SELECT * FROM users WHERE id = :id
 
+-- name: raw-users-get-by-username
+-- get user by username
+SELECT * FROM users WHERE username = :username
+
 -- name: raw-users-save!
 -- update user
 UPDATE users

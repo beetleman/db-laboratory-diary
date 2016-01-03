@@ -1,31 +1,22 @@
 (ns db-laboratory-diary.db
   (:require [yesql.core :refer [defquery defqueries]]
-            [environ.core :refer [env]]))
+            [environ.core :refer [env]]
+            [cemerick.friend :as friend]
+            (cemerick.friend [workflows :as workflows]
+                             [credentials :as creds])))
 
 (def db (env :db-url))
 
 (defquery tables "db/tables.sql" {:connection db})
 
 
-;; PASSWORD
+;; USERS
+(defqueries "db/users.sql" {:connection db})
 
 (defn hash-password
   "hash passwprd using sha1"
   [to-hash]
-  (apply str
-         (map (partial format "%02x")
-              (.digest (doto (java.security.MessageDigest/getInstance "sha1")
-                         .reset
-                         (.update (.getBytes to-hash)))))))
-
-(defn password-is-eq?
-  "compare password with hash"
-  [password hashed]
-  (= (hash-password password) hashed))
-
-
-;; USERS
-(defqueries "db/users.sql" {:connection db})
+  (creds/hash-bcrypt to-hash))
 
 (def default-admin-user
   {:name "admin"
