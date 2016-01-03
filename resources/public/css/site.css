@@ -8,3 +8,24 @@ a.github-ribbon img {
 #app {
   margin-top: 40px;
 }
+#app .form-signin {
+  max-width: 330px;
+  padding: 15px;
+  margin: 0 auto;
+}
+#app .form-signin .form-signin-heading,
+#app .form-signin input {
+  margin-bottom: 10px;
+}
+#app .form-signin .checkbox {
+  font-weight: normal;
+}
+#app .form-signin .form-control {
+  position: relative;
+  height: auto;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  padding: 10px;
+  font-size: 16px;
+}

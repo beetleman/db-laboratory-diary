@@ -16,13 +16,13 @@
 (defn users [& fields]
   (select-keys (db/raw-users-all)))
 
-
 (defroutes api-routes
   (context "/api" []
            (GET "/about" req (response {:name "db-laboratory-diary-api"
                                         :tables (db/tables)
-                                        :identity (friend/identity req)
+                                        :current-user (auth/current-user req)
                                         :version "0.0.1"}))
+           (GET "/is-auth" req (response (auth/current-user req)))
            (context "/users" []
                     (GET "/" [] (friend/authorize
                                  #{::auth/user}
@@ -32,9 +32,12 @@
 (def api
   (let [handler (wrap-defaults #'api-routes api-defaults)]
     (if (env :dev)
-      (-> handler (friend/authenticate {:credential-fn auth/credential-fn
-                                        :workflows [(workflows/http-basic)]})
+      (-> handler (friend/authenticate
+                   {:credential-fn auth/credential-fn
+                    :workflows [(workflows/http-basic
+                                 :realm "/")]})
           wrap-reload wrap-json-response wrap-exceptions wrap-reload)
       (-> handler (friend/authenticate {:credential-fn auth/credential-fn
-                                        :workflows [(workflows/http-basic)]})
+                                        :workflows [(workflows/http-basic
+                                                     :realm "/")]})
           wrap-reload wrap-json-response))))

@@ -51,6 +51,7 @@
 (defroutes site-routes
   (GET "/" [] loading-page)
   (GET "/about" [] loading-page)
+  (GET "/login" [] loading-page)
   (friend/logout (ANY "/logout" request (ring.util.response/redirect "/")))
   (resources "/"))
 
