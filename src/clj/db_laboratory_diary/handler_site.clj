@@ -56,5 +56,7 @@
   (resources "/"))
 
 (def site
-  (let [handler (wrap-defaults #'site-routes site-defaults)]
+  (let [handler (wrap-defaults #'site-routes
+                               (assoc-in site-defaults
+                                         [:security :anti-forgery ] false))]
     (if (env :dev) (-> handler wrap-exceptions wrap-reload) handler)))
