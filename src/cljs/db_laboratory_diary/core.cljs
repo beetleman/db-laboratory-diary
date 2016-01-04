@@ -8,8 +8,17 @@
 
 ;; -------------------------
 ;; Auth
-(defn is_auth? [{:keys [about]}]
+(defn is_user? [{:keys [about]}]
   (:current-user about))
+
+(defn is_admin? [{:keys [about]}]
+  (if-let [user (is_user? {:about about})]
+    (if (:is_admin user)
+      user
+      nil)))
+
+(defn is_anybody? [{:keys [about]}]
+  {})
 
 ;; -------------------------
 ;; API
@@ -66,8 +75,8 @@
      (.getKeys form-map))))
 
 (def header-links-def
-  [{:name "About" :href "/about"}
-   {:name "Home" :href "/"}])
+  [{:name "About" :href "/about" :auth is_user?}
+   {:name "Home" :href "/" :auth is_anybody?}])
 
 (defn header-links [{:keys [current-path]}]
   (into [:ul {:class "nav navbar-nav"}]
@@ -77,18 +86,22 @@
                              "")]
                  [:li {:class class}
                   [:a {:href (:href a)} (:name a)]]))
-             header-links-def)))
+             (filter (fn [v] ((:auth v) @state))  header-links-def))))
 
 (defn login-btn []
+  [:a {:href "login"}
+   [:button {:type "submit" :class "btn btn-success"}
+    "Sign in"]])
+
+
+(defn header-login []
   [:div {:class "nav navbar-form navbar-right"}
-   (if-let [user (is_auth? @state)]
+   (if-let [user (is_user? @state)]
      [:a {:href "/logout"}
       [:button {:type "submit" :class "btn btn-success"}
        "Logout " [:span (:username user)]]]
-     [:a {:href "login"}
-      [:button {:type "submit" :class "btn btn-success"}
-       "Sign in"]]
-     )])
+     [login-btn])])
+
 
 (defn header []
   [:nav {:class "navbar navbar-inverse navbar-fixed-top"}
@@ -108,7 +121,7 @@
      [:a {:class "navbar-brand" :href "/"} (get-in @state [:about :name])]]
     [:div {:class "collapse navbar-collapse" :id "navbar"}
      [header-links]
-     [login-btn]]]])
+     [header-login]]]])
 
 
 (defn home-page []
@@ -161,8 +174,13 @@
 
 
 (defn current-page []
-  [:div [header] [(session/get :current-page)]])
-
+  [:div [header]
+   (if ((session/get :is-auth?) @state)
+     [(session/get :current-page)]
+     [:div {:class "container"}
+      [:h2 "Error"]
+      [:p "You do not have sufficient permissions to access this page"]
+      [login-btn]])])
 
 ;; -------------------------
 ;; Routes
@@ -172,21 +190,22 @@
                "location"
                "pathname")))
 
-(defn site [page & api-todo]
+(defn site [page is-auth? & api-todo]
   (let [todo (into [["about" :about]] api-todo)]
     (doall (map (fn [a] (apply api-fetch a))
                 todo))
     (set-current-path)
+    (session/put! :is-auth? is-auth?)
     (session/put! :current-page page)))
 
 (secretary/defroute "/" []
-  (site #'home-page))
+  (site #'home-page is_anybody?))
 
 (secretary/defroute "/about" []
-  (site #'about-page))
+  (site #'about-page is_user?))
 
 (secretary/defroute "/login" []
-  (site #'login-page))
+  (site #'login-page is_anybody?))
 
 
 ;; -------------------------
