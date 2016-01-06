@@ -27,8 +27,8 @@
            (GET "/is-auth" req (response (auth/current-user req)))
            (context "/users" []
                     (GET "/" [] (friend/authorize
-                                 #{::auth/user}
-                                 (response (db/user-all)))))))
+                                 #{::auth/admin}
+                                 (response (db/user-all true)))))))
 
 
 (def api

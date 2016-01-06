@@ -8,6 +8,7 @@
             [db-laboratory-diary.base :refer [current-page]]
             [db-laboratory-diary.about :refer [about-page]]
             [db-laboratory-diary.login :refer [login-page]]
+            [db-laboratory-diary.users :refer [users-page]]
             [db-laboratory-diary.home :refer [home-page]]))
 
 ;; ------------------------
@@ -46,6 +47,10 @@
 
 (secretary/defroute "/login" []
   (site app-state #'login-page auth/is_anybody?))
+
+(secretary/defroute "/users" []
+  (site app-state #'users-page auth/is_admin?
+        [:users "users"]))
 
 
 ;; -------------------------
