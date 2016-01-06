@@ -176,7 +176,7 @@
                                  (accountant/navigate! "/")
                                  (assoc a k user))
                                (-> a (assoc k nil)
-                                   (assoc :error-msg
+                                   (assoc :danger-msg
                                           "Bad login or password"))))})))
 
 (defn login-page []
@@ -194,15 +194,23 @@
     [:button {:class "btn btn-lg btn-primary btn-block" :type "submit"}
      "Sign in"]]])
 
-(defn error-msg []
-  (when-let [msg (:error-msg @state)]
-    [:div {:class "alert alert-danger" :role "alert"} msg]))
+;; -------------------------
+;; Messages
+(defn msg* [state-target type]
+  (when-let [msg (state-target @state)]
+    [:div {:class (str "alert alert-" type) :role "alert"} msg]))
 
+(defn danger-msg []
+  (msg* :danger-msg "danger"))
+
+(defn success-msg []
+  (msg* :success-msg "danger"))
 
 (defn current-page []
   [:div
    [header]
-   [error-msg]
+   [danger-msg]
+   [success-msg]
    (if ((session/get :is-auth?) @state)
      [(session/get :current-page)]
      [:div {:class "container"}
@@ -223,7 +231,8 @@
     (doall (map (fn [a] (apply api-get a))
                 todo))
     (set-current-path)
-    (swap! state dissoc state :error-msg)
+    (swap! state dissoc state :danger-msg)
+    (swap! state dissoc state :success-msg)
     (session/put! :is-auth? is-auth?)
     (session/put! :current-page page)))
 
