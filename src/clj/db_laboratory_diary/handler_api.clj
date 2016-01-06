@@ -1,5 +1,5 @@
 (ns db-laboratory-diary.handler-api
-  (:require [compojure.core :refer [GET defroutes context]]
+  (:require [compojure.core :refer [GET POST defroutes context]]
             [ring.middleware.defaults :refer [api-defaults
                                               wrap-defaults]]
             [ring.middleware.json :refer [wrap-json-body wrap-json-response]]
@@ -22,6 +22,8 @@
                                         :tables (db/tables)
                                         :current-user (auth/current-user req)
                                         :version "0.0.1"}))
+           (POST "/check-credencials" [username password]
+                 (response (auth/check-user-password username password)))
            (GET "/is-auth" req (response (auth/current-user req)))
            (context "/users" []
                     (GET "/" [] (friend/authorize

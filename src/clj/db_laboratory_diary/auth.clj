@@ -30,10 +30,17 @@
 
 (derive ::admin ::user)
 
+(defn check-user-password
+  [username password]
+  (if-let [user (first (db/raw-users-get-by-username
+                          {:username username}))]
+    (if (password-is-eq? password (:password user))
+      (dissoc user :password)
+      {})
+    {}))
+
 (defn credential-fn
   "credential function for friend"
   [{:keys [username password]}]
-  (when-let [user (first (db/raw-users-get-by-username
-                          {:username username}))]
-    (when (password-is-eq? password (:password user))
-      (load-roles (dissoc user :password)))))
+  (when-let [user (check-user-password username password)]
+    (load-roles user)))

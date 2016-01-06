@@ -44,21 +44,42 @@
 (defn error-handler [{:keys [status status-text]}]
   (.log js/console (str "something bad happened: " status " " status-text)))
 
-(defn api-fetch [url state-target {:keys [] :as extra}]
+
+(defn api-get [url state-target {:keys [] :as extra}]
   (let [extra (merge {:headers (authorization-header @state)
+                      :error-handler error-handler
                       :handler-fn assoc}
                      extra)]
     (GET
      (api-url url)
-     :keywords? true
-     :response-format :json
-     :headers (:headers extra)
-     :error-handler error-handler
-     :handler (fn [response]
-                (swap! state
-                       (:handler-fn extra)
-                       state-target
-                       response)))))
+     {:keywords? true
+      :response-format :json
+      :headers (:headers extra)
+      :error-handler (:error-handler extra)
+      :handler (fn [response]
+                 (swap! state
+                        (:handler-fn extra)
+                        state-target
+                        response))})))
+
+(defn api-post [url state-target params {:keys [] :as extra}]
+  (let [extra (merge {:headers (authorization-header @state)
+                      :error-handler error-handler
+                      :handler-fn assoc}
+                     extra)]
+    (POST
+     (api-url url)
+     {:params params
+      :keywords? true
+      :format :raw
+      :response-format :json
+      :headers (:headers extra)
+      :error-handler (:error-handler extra)
+      :handler (fn [response]
+                 (swap! state
+                        (:handler-fn extra)
+                        state-target
+                        response))})))
 
 ;; -------------------------
 ;; Views
@@ -145,17 +166,18 @@
 (defn submit-login [event]
   (.preventDefault event)
   (let [user (form->map (.-target event))]
-    (api-fetch "is-auth"
-               :user
-               {:headers (authorization-header {:user user})
-                :handler-fn (fn [a k v]
-                              (if (:username v)
-                                (do
-                                  (accountant/navigate! "/")
-                                  (assoc a k user))
-                                (do
-                                  (accountant/navigate! "/login")
-                                  (assoc a k nil))))})))
+    (api-post "check-credencials"
+              :user
+              user
+              {:headers {}
+               :handler-fn (fn [a k v]
+                             (if (:username v)
+                               (do
+                                 (accountant/navigate! "/")
+                                 (assoc a k user))
+                               (-> a (assoc k nil)
+                                   (assoc :error-msg
+                                          "Bad login or password"))))})))
 
 (defn login-page []
   [:div {:class "container"}
@@ -172,9 +194,15 @@
     [:button {:class "btn btn-lg btn-primary btn-block" :type "submit"}
      "Sign in"]]])
 
+(defn error-msg []
+  (when-let [msg (:error-msg @state)]
+    [:div {:class "alert alert-danger" :role "alert"} msg]))
+
 
 (defn current-page []
-  [:div [header]
+  [:div
+   [header]
+   [error-msg]
    (if ((session/get :is-auth?) @state)
      [(session/get :current-page)]
      [:div {:class "container"}
@@ -192,9 +220,10 @@
 
 (defn site [page is-auth? & api-todo]
   (let [todo (into [["about" :about]] api-todo)]
-    (doall (map (fn [a] (apply api-fetch a))
+    (doall (map (fn [a] (apply api-get a))
                 todo))
     (set-current-path)
+    (swap! state dissoc state :error-msg)
     (session/put! :is-auth? is-auth?)
     (session/put! :current-page page)))
 

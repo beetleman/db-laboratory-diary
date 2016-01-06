@@ -6,6 +6,6 @@
 
 (def app
   (routes
-   site
    api
+   site
    (not-found "Page not fund:/")))
