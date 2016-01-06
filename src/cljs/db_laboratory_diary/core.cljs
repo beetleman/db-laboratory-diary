@@ -198,7 +198,8 @@
 ;; Messages
 (defn msg* [state-target type]
   (when-let [msg (state-target @state)]
-    [:div {:class (str "alert alert-" type) :role "alert"} msg]))
+    [:div {:class (str "alert alert-" type) :role "alert"
+           :on-click #(swap! state dissoc state-target)} msg]))
 
 (defn danger-msg []
   (msg* :danger-msg "danger"))
