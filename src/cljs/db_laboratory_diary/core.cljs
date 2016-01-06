@@ -26,8 +26,8 @@
 (def api
   "/api")
 
-(def state (atom {}))
-(add-watch state :logger #(-> %4 clj->js js/console.debug))
+(def app-state (atom {}))
+(add-watch app-state :logger #(-> %4 clj->js js/console.debug))
 
 (defn api-url [url]
   (str api "/" url))
@@ -45,7 +45,7 @@
   (.log js/console (str "something bad happened: " status " " status-text)))
 
 
-(defn api-get [url state-target {:keys [] :as extra}]
+(defn api-get [state state-target url {:keys [] :as extra}]
   (let [extra (merge {:headers (authorization-header @state)
                       :error-handler error-handler
                       :handler-fn assoc}
@@ -62,7 +62,7 @@
                         state-target
                         response))})))
 
-(defn api-post [url state-target params {:keys [] :as extra}]
+(defn api-post [state state-target url params {:keys [] :as extra}]
   (let [extra (merge {:headers (authorization-header @state)
                       :error-handler error-handler
                       :handler-fn assoc}
@@ -99,7 +99,7 @@
   [{:name "About" :href "/about" :auth is_user?}
    {:name "Home" :href "/" :auth is_anybody?}])
 
-(defn header-links [{:keys [current-path]}]
+(defn header-links [state]
   (into [:ul {:class "nav navbar-nav"}]
         (map (fn [a]
                (let [class (if (= (a :href) (:current-path @state))
@@ -109,22 +109,22 @@
                   [:a {:href (:href a)} (:name a)]]))
              (filter (fn [v] ((:auth v) @state))  header-links-def))))
 
-(defn login-btn []
+(defn login-btn [state]
   [:a {:href "login"}
    [:button {:type "submit" :class "btn btn-success"}
     "Sign in"]])
 
 
-(defn header-login []
+(defn header-login [state]
   [:div {:class "nav navbar-form navbar-right"}
    (if-let [user (is_user? @state)]
      [:a {:href "/logout"}
       [:button {:type "submit" :class "btn btn-success"}
        "Logout " [:span (:username user)]]]
-     [login-btn])])
+     [login-btn state])])
 
 
-(defn header []
+(defn header [state]
   [:nav {:class "navbar navbar-inverse navbar-fixed-top"}
    [:div {:class "container"}
     [:div {:class "navbar-header"}
@@ -141,16 +141,16 @@
       [:span {:class "icon-bar"}]]
      [:a {:class "navbar-brand" :href "/"} (get-in @state [:about :name])]]
     [:div {:class "collapse navbar-collapse" :id "navbar"}
-     [header-links]
-     [header-login]]]])
+     [header-links state]
+     [header-login state]]]])
 
 
-(defn home-page []
+(defn home-page [state]
   [:div {:class "container"}
    [:h2 "Welcome to db-laboratory-diary"]
    [:div [:a {:href "/about"} "go to about page"]]])
 
-(defn about-page []
+(defn about-page [state]
   [:div {:class "container"}
    [:h2 "About"]
    [:ul
@@ -163,25 +163,24 @@
    [:div [:a {:href "/"} "go to the home page"]]])
 
 
-(defn submit-login [event]
+(defn submit-login [state event]
   (.preventDefault event)
   (let [user (form->map (.-target event))]
-    (api-post "check-credencials"
-              :user
-              user
-              {:headers {}
-               :handler-fn (fn [a k v]
-                             (if (:username v)
-                               (do
-                                 (accountant/navigate! "/")
-                                 (assoc a k user))
-                               (-> a (assoc k nil)
-                                   (assoc :danger-msg
-                                          "Bad login or password"))))})))
+    (api-post
+     state :user "check-credencials" user
+     {:headers {}
+      :handler-fn (fn [a k v]
+                    (if (:username v)
+                      (do
+                        (accountant/navigate! "/")
+                        (assoc a k user))
+                      (-> a (assoc k nil)
+                          (assoc :danger-msg
+                                 "Bad login or password"))))})))
 
-(defn login-page []
+(defn login-page [state]
   [:div {:class "container"}
-   [:form {:class "form-signin" :on-submit submit-login}
+   [:form {:class "form-signin" :on-submit #(submit-login state %)}
     [:h2 {:class "form-signin-heading"} "Please sign in"]
     [:label {:for "inputUsername" :class"sr-only"} "Username"]
     [:input {:id "inputUsername" :name "username"
@@ -196,62 +195,62 @@
 
 ;; -------------------------
 ;; Messages
-(defn msg* [state-target type]
+(defn msg* [state state-target type]
   (when-let [msg (state-target @state)]
     [:div {:class (str "alert alert-" type) :role "alert"
            :on-click #(swap! state dissoc state-target)} msg]))
 
-(defn danger-msg []
-  (msg* :danger-msg "danger"))
+(defn danger-msg [state]
+  (msg* state :danger-msg "danger"))
 
-(defn success-msg []
-  (msg* :success-msg "danger"))
+(defn success-msg [state]
+  (msg* state :success-msg "danger"))
 
-(defn current-page []
+(defn current-page [state]
   [:div
-   [header]
-   [danger-msg]
-   [success-msg]
+   [header state]
+   [danger-msg state]
+   [success-msg state]
    (if ((session/get :is-auth?) @state)
-     [(session/get :current-page)]
+     [(session/get :current-page) state]
      [:div {:class "container"}
       [:h2 "Error"]
       [:p "You do not have sufficient permissions to access this page"]
-      [login-btn]])])
+      [login-btn state]])])
 
 ;; -------------------------
 ;; Routes
-(defn set-current-path []
+(defn set-current-path [state]
   (swap! state assoc :current-path
          (aget js/window
                "location"
                "pathname")))
 
-(defn site [page is-auth? & api-todo]
-  (let [todo (into [["about" :about]] api-todo)]
-    (doall (map (fn [a] (apply api-get a))
+(defn site [state page is-auth? & api-todo]
+  (let [todo (into [[:about "about"]] api-todo)]
+    (doall (map (fn [a] (apply api-get (into [state] a)))
                 todo))
-    (set-current-path)
+    (set-current-path state)
     (swap! state dissoc state :danger-msg)
     (swap! state dissoc state :success-msg)
     (session/put! :is-auth? is-auth?)
     (session/put! :current-page page)))
 
 (secretary/defroute "/" []
-  (site #'home-page is_anybody?))
+  (site app-state #'home-page is_anybody?))
 
 (secretary/defroute "/about" []
-  (site #'about-page is_user?))
+  (site app-state #'about-page is_user?))
 
 (secretary/defroute "/login" []
-  (site #'login-page is_anybody?))
+  (site app-state #'login-page is_anybody?))
 
 
 ;; -------------------------
 ;; Initialize app
 
 (defn mount-root []
-  (reagent/render [current-page] (.getElementById js/document "app")))
+  (reagent/render [current-page app-state] (.getElementById js/document "app")))
 
 (defn init! []
   (accountant/configure-navigation!)
