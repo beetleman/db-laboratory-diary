@@ -11,6 +11,10 @@
 
 
 ;; USERS
+
+(def user-fields-public [:id :username :lastname :firstname])
+(def user-fields-priv [:id :username :lastname :firstname :is_admin :email])
+
 (defqueries "db/users.sql" {:connection db})
 
 (defn hash-password
@@ -33,15 +37,22 @@
 (defn users-create<!
   "create new user with hashing password"
   [user]
-  (raw-users-create<! (update user :password hash-password)))
+  (let [user (merge
+              {:firstname nil
+               :lastname nil
+               :password "password"}
+              user)]
+    (select-keys
+     (raw-users-create<! (update user :password hash-password))
+     user-fields-priv)))
 
 (defn user-all
   ([]
    (user-all false))
   ([admin?]
    (let [fields (if admin?
-                  [:id :username :lastname :firstname :is_admin :email]
-                  [:id :username :lastname :firstname])]
+                  user-fields-priv
+                  user-fields-public)]
      (map (fn [user] (select-keys user fields))
           (raw-users-all)))))
 

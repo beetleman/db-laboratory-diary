@@ -30,8 +30,9 @@
     (doall (map (fn [a] (apply api/api-get (into [state] a)))
                 todo))
     (set-current-path state)
-    (swap! state dissoc state :danger-msg)
-    (swap! state dissoc state :success-msg)
+    (swap! state dissoc :danger-msg)
+    (swap! state dissoc :success-msg)
+    (swap! state assoc :page-state :view)
     (session/put! :is-auth? is-auth?)
     (session/put! :current-page page)))
 

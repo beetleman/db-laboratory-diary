@@ -28,7 +28,15 @@
            (context "/users" []
                     (GET "/" [] (friend/authorize
                                  #{::auth/admin}
-                                 (response (db/user-all true)))))))
+                                 (response (db/user-all true))))
+                    (POST "/"
+                          [username is_admin email]
+                          (friend/authorize
+                           #{::auth/admin}
+                           (db/users-create<!
+                            {:username username
+                             :email email
+                             :is_admin is_admin}))))))
 
 
 (def api
