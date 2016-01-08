@@ -44,7 +44,6 @@
              :crossorigin "anonymous"}]
      (include-css (if (env :dev) "css/site.css" "css/site.min.css"))]
     [:body
-     github-ribbon
      mount-target
      (include-js "js/app.js")]]))
 
