@@ -46,8 +46,8 @@
                    {:credential-fn auth/credential-fn
                     :workflows [(workflows/http-basic
                                  :realm "/")]})
-          wrap-reload wrap-json-response wrap-exceptions wrap-reload)
+          wrap-json-response wrap-exceptions wrap-reload)
       (-> handler (friend/authenticate {:credential-fn auth/credential-fn
                                         :workflows [(workflows/http-basic
                                                      :realm "/")]})
-          wrap-reload wrap-json-response))))
+          wrap-json-response))))
