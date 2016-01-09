@@ -24,13 +24,17 @@
                       :error-handler error-handler
                       :handler-fn assoc}
                      extra)]
+    (swap! state assoc :loading true)
     (GET
      (api-url url)
      {:keywords? true
       :response-format :json
       :headers (:headers extra)
-      :error-handler (:error-handler extra)
+      :error-handler (fn [& args]
+                       (swap! state assoc :loading false)
+                       (apply (:error-handler extra) args))
       :handler (fn [response]
+                 (swap! state assoc :loading false)
                  (swap! state
                         (:handler-fn extra)
                         state-target
@@ -41,6 +45,7 @@
                       :error-handler error-handler
                       :handler-fn assoc}
                      extra)]
+    (swap! state assoc :loading true)
     (POST
      (api-url url)
      {:params params
@@ -48,8 +53,11 @@
       :format :raw
       :response-format :json
       :headers (:headers extra)
-      :error-handler (:error-handler extra)
+      :error-handler (fn [& args]
+                       (swap! state assoc :loading false)
+                       (apply (:error-handler extra) args))
       :handler (fn [response]
+                 (swap! state assoc :loading false)
                  (swap! state
                         (:handler-fn extra)
                         state-target

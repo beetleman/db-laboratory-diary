@@ -61,9 +61,16 @@
      [header-links state]
      [header-login state]]]])
 
+(defn loading-spinner [state]
+  (when (:loading @state)
+    [:div.cover
+     [:div.spinner-container
+      [:i {:class "fa fa-cog fa-5x fa-spinner fa-pulse"}]]]))
+
 (defn current-page [state]
   [:div
    [header state]
+   [loading-spinner state]
    [danger-msg state]
    [success-msg state]
    (if ((session/get :is-auth?) @state)

@@ -8,11 +8,23 @@ a.github-ribbon img {
 #app {
   margin-top: 60px;
 }
-#app .spiner-container {
+#app .spinner-container {
   display: block;
   margin-right: auto;
   margin-left: auto;
   width: 100px;
+}
+#app .cover {
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.1);
+  z-index: 5;
+  width: 100%;
+  height: 100%;
+}
+#app .cover .spinner-container {
+  margin-top: 30%;
 }
 #app .form-signin {
   max-width: 330px;

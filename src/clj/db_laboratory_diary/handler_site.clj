@@ -12,10 +12,9 @@
 
 (def mount-target
   [:div#app {:class "container"}
-   [:div {:class "spiner-container"}
+   [:div {:class "spinner-container"}
     [:i {:class "fa fa-cog fa-5x fa-spin"}]
     [:h3 "Page loading.."]]])
-
 
 (def github-ribbon
   [:a {:class "github-ribbon"
