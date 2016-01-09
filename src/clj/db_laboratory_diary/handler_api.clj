@@ -26,17 +26,17 @@
                  (response (auth/check-user-password username password)))
            (GET "/is-auth" req (response (auth/current-user req)))
            (context "/users" []
-                    (GET "/" [] (friend/authorize
-                                 #{::auth/admin}
-                                 (response (db/user-all true))))
-                    (POST "/"
-                          [username is_admin email]
+                    (GET "/" []
+                         (friend/authorize
+                          #{::auth/admin}
+                          (response (db/user-all true))))
+                    (POST "/" [username is_admin email]
                           (friend/authorize
                            #{::auth/admin}
-                           (db/users-create<!
-                            {:username username
-                             :email email
-                             :is_admin is_admin}))))))
+                           (response (db/users-create<!
+                                      {:username username
+                                       :email email
+                                       :is_admin (= is_admin "true")})))))))
 
 
 (def api

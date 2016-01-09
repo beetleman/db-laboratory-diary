@@ -42,9 +42,13 @@
                :lastname nil
                :password "password"}
               user)]
-    (select-keys
-     (raw-users-create<! (update user :password hash-password))
-     user-fields-priv)))
+    (try
+      {:error nil
+       :data (select-keys
+              (raw-users-create<! (update user :password hash-password))
+              user-fields-priv)}
+      (catch Exception e {:error "Username or password exists in db!"
+                          :data nil}))))
 
 (defn user-all
   ([]

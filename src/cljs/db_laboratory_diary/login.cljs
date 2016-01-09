@@ -20,7 +20,7 @@
 
 (defn login-page [state]
   [:div {:class "container"}
-   [:form {:class "form-signin" :on-submit #(submit-login state %)}
+   [:form {:class "form-signin" :on-submit (partial submit-login state)}
     [:h2 {:class "form-signin-heading"} "Please sign in"]
     [:label {:for "inputUsername" :class"sr-only"} "Username"]
     [:input {:id "inputUsername" :name "username"

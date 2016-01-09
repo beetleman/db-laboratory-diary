@@ -15,7 +15,8 @@
     {}))
 
 (defn error-handler [{:keys [status status-text]}]
-  (.log js/console (str "something bad happened: " status " " status-text)))
+  (js/alert (str "something bad happened: " status " " status-text ". "
+                 "Please refresh this page and try again.")))
 
 
 (defn api-get [state state-target url {:keys [] :as extra}]
