@@ -12,16 +12,23 @@
      {}
      (.getKeys form-map))))
 
-(defn form-group-input [label name {:keys [type]
-                              :or {type ""}
-                              :as params}]
-  (let [id (str "input" name)]
+(defn form-group-input [label name {:keys [type required lenght]
+                                    :or {type ""
+                                         lenght 5
+                                         required true}
+                                    :as params}]
+  (let [id (str "input" name)
+        title (str  lenght " characters minimum")
+        pattern (str ".{" lenght ",}")]
     [:div.form-group
      [:label {:for id} label]
      [:input (merge {:class "form-control"
                      :id id
+                     :pattern pattern
+                     :title title
                      :name name
-                     :type type}
+                     :type type
+                     :required required}
                     params)]]))
 
 (defn form-checkbox [label name]

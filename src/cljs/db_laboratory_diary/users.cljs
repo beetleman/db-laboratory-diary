@@ -37,8 +37,8 @@
 
 (defn add-user-form [state]
   [:form {:on-submit (partial on-add-user state)}
-   [form/form-group-input "Username" "username" {:pattern ".{5,}"}]
-   [form/form-group-input "Email" "email" {:type "email" :pattern ".{5,}"}]
+   [form/form-group-input "Username" "username"]
+   [form/form-group-input "Email" "email" {:type "email"}]
    [form/form-checkbox "Admin" "is_admin"]
    [form/form-yes-no (e/on-view state)]])
 
