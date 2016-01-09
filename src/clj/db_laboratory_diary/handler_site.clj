@@ -12,10 +12,9 @@
 
 (def mount-target
   [:div#app {:class "container"}
-   [:h3 "ClojureScript has not been compiled!"]
-   [:p "please run "
-    [:b "lein figwheel"]
-    " in order to start the compiler"]])
+   [:div {:class "spiner-container"}
+    [:i {:class "fa fa-cog fa-5x fa-spin"}]
+    [:h3 "Page loading.."]]])
 
 
 (def github-ribbon
@@ -42,6 +41,9 @@
              :href "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css"
              :integrity "sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r"
              :crossorigin "anonymous"}]
+     [:link {:rel "stylesheet"
+             :href "https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"}]
+
      (include-css (if (env :dev) "css/site.css" "css/site.min.css"))]
     [:body
      mount-target
