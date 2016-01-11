@@ -25,6 +25,21 @@
            (POST "/check-credencials" [username password]
                  (response (auth/check-user-password username password)))
            (GET "/is-auth" req (response (auth/current-user req)))
+           (context "/experiments" []
+                    (GET "/" []
+                         (friend/authorize
+                          #{::auth/admin}
+                          (response (db/raw-experiments-all))))
+                    (POST "/" [manager_id area_data_id fertilizer
+                               start_date stop_date]
+                         (friend/authorize
+                          #{::auth/admin}
+                          (response (db/raw-experiments-create<!
+                                     {:manager_id manager_id
+                                      :area_data_id area_data_id
+                                      :fertilizer fertilizer
+                                      :start_date start_date
+                                      :stop_date stop_date})))))
            (context "/users" []
                     (GET "/" []
                          (friend/authorize

@@ -1,6 +1,8 @@
 (ns db-laboratory-diary.db
   (:require [yesql.core :refer [defquery defqueries]]
             [environ.core :refer [env]]
+            [clj-time.core :as timec]
+            [clj-time.format :as timef]
             [cemerick.friend :as friend]
             (cemerick.friend [workflows :as workflows]
                              [credentials :as creds])))
@@ -8,6 +10,13 @@
 (def db (env :db-url))
 
 (defquery tables "db/tables.sql" {:connection db})
+
+;; UTILS
+(defn error-message [message]
+  {:data nil :error message})
+
+(defn success-message [data]
+  {:data data :error nil})
 
 
 ;; USERS
@@ -43,12 +52,10 @@
                :password "password"}
               user)]
     (try
-      {:error nil
-       :data (select-keys
-              (raw-users-create<! (update user :password hash-password))
-              user-fields-priv)}
-      (catch Exception e {:error "Username or password exists in db!"
-                          :data nil}))))
+      (success-message (select-keys
+                        (raw-users-create<! (update user :password hash-password))
+                        user-fields-priv))
+      (catch Exception e (error-message "Username or password exists in db!")))))
 
 (defn user-all
   ([]
@@ -82,3 +89,14 @@
 ;; EXPERIMENTS
 
 (defqueries "db/experiments.sql" {:connection db})
+
+(defn raw-experiments-create<! [experiment]
+  (let [start_date (-> experiment :start_date (timef/parse))
+        stop_date (-> experiment :stop_date (timef/parse))
+        experiment (merge experiment {:start_date start_date
+                                      :stop_date stop_date})]
+    (if (and stop_date start_date (timec/after? stop_date start_date))
+      (try
+        (success-message (raw-experiments-create<! experiment))
+        (catch Exception e (error-message "Errors in referencces!")))
+      (error-message "Errors in 'start date or 'stop date'!"))))

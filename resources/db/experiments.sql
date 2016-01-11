@@ -66,8 +66,8 @@ WHERE laborants_experiments.experiment = :experiment_id
 -- name: raw-experiments-create<!
 -- create new experiment
 INSERT INTO experiments
-(manager, area_data, fertilizer)
-VALUES (:manager_id, :area_data_id, :fertilizer)
+(manager, area_data, fertilizer, start_date, stop_date)
+VALUES (:manager_id, :area_data_id, :fertilizer, :start_date, :stop_date)
 
 -- name: raw-experiments-delete!
 -- delete experiment
