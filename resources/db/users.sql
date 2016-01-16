@@ -24,7 +24,7 @@ SET name = :name,
     username = :username,
     email = :email,
     password = :password,
-    is_admin = :is_admin,
+    is_admin = :is_admin
 WHERE id = :id
 
 -- name: raw-users-create<!
