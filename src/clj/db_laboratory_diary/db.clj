@@ -90,7 +90,7 @@
 
 (defqueries "db/experiments.sql" {:connection db})
 
-(defn raw-experiments-create<! [experiment]
+(defn experiments-create<! [experiment]
   (let [start_date (-> experiment :start_date (timef/parse))
         stop_date (-> experiment :stop_date (timef/parse))
         experiment (merge experiment {:start_date start_date
