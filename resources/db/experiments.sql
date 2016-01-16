@@ -36,7 +36,7 @@ WHERE id = :id
 -- name: raw-add-laborant-to-experiment<!
 -- add laborant to experiment
 INSERT INTO laborants_experiments
-(experiment, laborant)
+       (experiment, laborant)
 VALUES (:experiment_id, :laborant_id)
 
 -- name: raw-delete-laborant-from-experiment!
@@ -63,10 +63,22 @@ INNER JOIN laborants_experiments
       ON experiments.id = laborants_experiments.experiment
 WHERE laborants_experiments.experiment = :experiment_id
 
+-- name: raw-add-surface-to-experiment<!
+-- add laborant to experiment
+INSERT INTO surfaces
+       (experiment, area)
+VALUES (:experiment_id, :area)
+
+-- name: raw-all-surfaces-for-experiment
+-- get all surfaces for experiment
+SELECT * FROM surfaces
+WHERE experiment = :experiment_id
+
+
 -- name: raw-experiments-create<!
 -- create new experiment
 INSERT INTO experiments
-(manager, area_data, fertilizer, start_date, stop_date)
+       (manager, area_data, fertilizer, start_date, stop_date)
 VALUES (:manager_id, :area_data_id, :fertilizer, :start_date, :stop_date)
 
 -- name: raw-experiments-delete!
