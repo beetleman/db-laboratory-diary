@@ -11,6 +11,10 @@ SELECT * FROM surfaces
 -- get surface by id
 SELECT * FROM surfaces WHERE id = :id
 
+-- name: raw-surfaces-get-by-experiment
+-- get surface by id
+SELECT * FROM surfaces WHERE experiment = :experiment_id
+
 -- name: raw-add-mesurment-to-surfaces<!
 -- add mesurment to surface
 INSERT INTO mesurments

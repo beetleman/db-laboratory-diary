@@ -12,6 +12,10 @@
 (defquery tables "db/tables.sql" {:connection db})
 
 ;; UTILS
+(def error-message
+  "deffault error mesage"
+  "Wrong data!")
+
 (defn get-error-message [message]
   {:data nil :error message})
 
@@ -19,11 +23,13 @@
   {:data data :error nil})
 
 (defmacro defquery-with-message
-  [name query error-message]
-  `(defn ~name [args#]
-     (try
-       (get-success-message (~query args#))
-       (catch Exception e# (get-error-message ~error-message)))))
+  ([query-name query]
+   `(defquery-with-message ~query-name ~query error-message))
+  ([query-name query error-message]
+   `(defn ~query-name [args#]
+      (try
+        (get-success-message (~query args#))
+        (catch Exception e# (get-error-message ~error-message))))))
 
 ;; USERS
 
@@ -106,3 +112,25 @@
         (get-success-message (raw-experiments-create<! experiment))
         (catch Exception e (get-error-message "Errors in referencces!")))
       (get-error-message "Errors in 'start date or 'stop date'!"))))
+
+
+(defn experiments-get [args]
+  (if-let [experiment (raw-experiments-get args)]
+    (merge experiment
+           {:manager (first (raw-users-get
+                      {:id (:manager experiment)}))
+            :area_data (first (raw-area_data-get
+                               {:id (:area_data experiment)}))
+            :surfaces (raw-surfaces-get-by-experiment args)
+            :laborants (raw-all-laborant-for-experiment args)})))
+
+;; AREA_DATA
+
+(defqueries "db/area_data.sql" {:connection db})
+(defquery-with-message area_data-create<! raw-area_data-create<!)
+
+
+
+;; SURFACES
+
+(defqueries "db/surfaces.sql" {:connection db})

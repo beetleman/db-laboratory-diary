@@ -22,8 +22,8 @@ WHERE id = :id
 -- name: raw-area_data-create<!
 -- create new area_data
 INSERT INTO area_data
-       (max_area adress name)
-VALUES (:max_area :adress :name)
+       (max_area address name)
+VALUES (:max_area :address :name)
 
 -- name: raw-area_data-delete!
 -- delete area_data
