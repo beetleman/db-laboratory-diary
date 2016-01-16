@@ -12,12 +12,18 @@
 (defquery tables "db/tables.sql" {:connection db})
 
 ;; UTILS
-(defn error-message [message]
+(defn get-error-message [message]
   {:data nil :error message})
 
-(defn success-message [data]
+(defn get-success-message [data]
   {:data data :error nil})
 
+(defmacro defquery-with-message
+  [name query error-message]
+  `(defn ~name [args#]
+     (try
+       (get-success-message (~query args#))
+       (catch Exception e# (get-error-message ~error-message)))))
 
 ;; USERS
 
@@ -52,10 +58,10 @@
                :password "password"}
               user)]
     (try
-      (success-message (select-keys
+      (get-success-message (select-keys
                         (raw-users-create<! (update user :password hash-password))
                         user-fields-priv))
-      (catch Exception e (error-message "Username or password exists in db!")))))
+      (catch Exception e (get-error-message "Username or password exists in db!")))))
 
 (defn user-all
   ([]
@@ -97,6 +103,6 @@
                                       :stop_date stop_date})]
     (if (and stop_date start_date (timec/after? stop_date start_date))
       (try
-        (success-message (raw-experiments-create<! experiment))
-        (catch Exception e (error-message "Errors in referencces!")))
-      (error-message "Errors in 'start date or 'stop date'!"))))
+        (get-success-message (raw-experiments-create<! experiment))
+        (catch Exception e (get-error-message "Errors in referencces!")))
+      (get-error-message "Errors in 'start date or 'stop date'!"))))
