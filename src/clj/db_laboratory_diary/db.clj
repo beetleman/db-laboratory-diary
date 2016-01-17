@@ -97,6 +97,16 @@
   (if (zero? (user-count))
     (users-create<! default-admin-user)))
 
+;; AREA_DATA
+
+(defqueries "db/area_data.sql" {:connection db})
+(defquery-with-message area_data-create<! raw-area_data-create<!)
+
+
+;; SURFACES
+
+(defqueries "db/surfaces.sql" {:connection db})
+
 
 ;; EXPERIMENTS
 
@@ -123,14 +133,3 @@
                                {:id (:area_data experiment)}))
             :surfaces (raw-surfaces-get-by-experiment args)
             :laborants (raw-all-laborant-for-experiment args)})))
-
-;; AREA_DATA
-
-(defqueries "db/area_data.sql" {:connection db})
-(defquery-with-message area_data-create<! raw-area_data-create<!)
-
-
-
-;; SURFACES
-
-(defqueries "db/surfaces.sql" {:connection db})
