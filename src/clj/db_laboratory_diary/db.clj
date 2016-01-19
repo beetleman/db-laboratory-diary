@@ -133,3 +133,29 @@
                                {:id (:area_data experiment)}))
             :surfaces (raw-surfaces-get-by-experiment args)
             :laborants (raw-all-laborant-for-experiment args)})))
+
+
+(defquery-with-message
+  add-surface-to-experiment<!
+  raw-add-surface-to-experiment<!
+  "Bad surface area or experiment dont exist")
+
+(defquery-with-message
+  add-laborant-to-experiment<!
+  raw-add-laborant-to-experiment<!
+  "Bad user id or experiment dont exist")
+
+(defquery-with-message
+  delete-laborant-from-experiment!
+  raw-delete-laborant-from-experiment!
+  "Laborant or experiment dont exist")
+
+(defquery-with-message
+  add-mesurment-to-surfaces<!
+  raw-add-mesurment-to-surfaces<!
+  "Surface dont exist or or duble mesurment")
+
+(defquery-with-message
+  all-mesurments-for-surfaces
+  raw-all-mesurments-for-surfaces
+  "Surface dont exist")
