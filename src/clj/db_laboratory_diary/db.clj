@@ -18,7 +18,10 @@
 
 (defn get-error-message
   ([message] (get-error-message message nil))
-  ([message e] {:data nil :error message :raw-error e}))
+  ([message e]
+   (let [e (if ((complement nil?) e)
+             (.getMessage e))]
+     {:data nil :error message :raw-error e})))
 
 (defn get-success-message [data]
   {:data data :error nil})
