@@ -41,7 +41,7 @@
 (defn hash-password
   "hash passwprd using bcrypt"
   [to-hash]
-  (creds/hash-bcrypt) to-hash)
+  (creds/hash-bcrypt to-hash))
 
 (def default-admin-user
   {:name "admin"
