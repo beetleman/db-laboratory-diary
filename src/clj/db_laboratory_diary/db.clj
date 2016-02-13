@@ -26,14 +26,23 @@
 (defn get-success-message [data]
   {:data data :error nil})
 
+
+(defn query-with-message [query error-message converters args]
+  (let [args (reduce-kv (fn [m k v]
+                          (assoc m k (v (k args))))
+                        args converters)]
+    (try
+      (get-success-message (query args))
+      (catch Exception e (get-error-message error-message e)))))
+
 (defmacro defquery-with-message
   ([query-name query]
-   `(defquery-with-message ~query-name ~query error-message))
+   `(defquery-with-message ~query-name ~query error-message {}))
   ([query-name query error-message]
+   `(defquery-with-message ~query-name ~query ~error-message {}))
+  ([query-name query error-message converters]
    `(defn ~query-name [args#]
-      (try
-        (get-success-message (~query args#))
-        (catch Exception e# (get-error-message ~error-message) e#)))))
+      (query-with-message ~query ~error-message ~converters args#))))
 
 ;; USERS
 
