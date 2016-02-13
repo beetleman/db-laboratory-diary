@@ -9,13 +9,13 @@
             [db-laboratory-diary.about :refer [about-page]]
             [db-laboratory-diary.login :refer [login-page]]
             [db-laboratory-diary.users :refer [users-page]]
+            [db-laboratory-diary.experiments :refer [experiments-page]]
             [db-laboratory-diary.home :refer [home-page]]))
 
 ;; ------------------------
 ;; app state
 (def app-state (atom {}))
 (add-watch app-state :logger #(-> %4 clj->js js/console.debug))
-
 
 ;; ------------------------
 ;; helpers
@@ -52,6 +52,10 @@
 (secretary/defroute "/users" []
   (site app-state #'users-page auth/is_admin?
         [:users "users"]))
+
+(secretary/defroute "/experiments" []
+  (site app-state #'experiments-page auth/is_admin?
+        [:experiments "experiments"]))
 
 
 ;; -------------------------

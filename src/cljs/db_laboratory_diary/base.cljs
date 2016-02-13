@@ -29,7 +29,8 @@
 (def header-links-def
   [{:name "About" :href "/about" :auth auth/is_user?}
    {:name "Home" :href "/" :auth auth/is_anybody?}
-   {:name "Users" :href "/users" :auth auth/is_admin?}])
+   {:name "Users" :href "/users" :auth auth/is_admin?}
+   {:name "Experiments" :href "/experiments" :auth auth/is_user?}])
 
 (defn header-links [state]
   (into [:ul {:class "nav navbar-nav"}]
