@@ -16,8 +16,9 @@
   "deffault error mesage"
   "Wrong data!")
 
-(defn get-error-message [message]
-  {:data nil :error message})
+(defn get-error-message
+  ([message] (get-error-message message nil))
+  ([message e] {:data nil :error message :raw-error e}))
 
 (defn get-success-message [data]
   {:data data :error nil})
@@ -29,7 +30,7 @@
    `(defn ~query-name [args#]
       (try
         (get-success-message (~query args#))
-        (catch Exception e# (get-error-message ~error-message))))))
+        (catch Exception e# (get-error-message ~error-message) e#)))))
 
 ;; USERS
 
@@ -64,10 +65,12 @@
                :password "password"}
               user)]
     (try
-      (get-success-message (select-keys
-                        (raw-users-create<! (update user :password hash-password))
-                        user-fields-priv))
-      (catch Exception e (get-error-message "Username or password exists in db!")))))
+      (get-success-message
+       (select-keys
+        (raw-users-create<! (update user :password hash-password))
+        user-fields-priv))
+      (catch Exception e
+        (get-error-message "Username or password exists in db!" e)))))
 
 (defn user-all
   ([]
@@ -120,7 +123,7 @@
     (if (and stop_date start_date (timec/after? stop_date start_date))
       (try
         (get-success-message (raw-experiments-create<! experiment))
-        (catch Exception e (get-error-message "Errors in referencces!")))
+        (catch Exception e (get-error-message "Errors in referencces!" e)))
       (get-error-message "Errors in 'start date or 'stop date'!"))))
 
 
