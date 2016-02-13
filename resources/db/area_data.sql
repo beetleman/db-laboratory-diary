@@ -14,7 +14,7 @@ SELECT * FROM area_data WHERE id = :id
 -- name: raw-area_data-save!
 -- update area_data
 UPDATE area_data
-SET name = :name,
+SET name = :name
     address = :address,
     max_area = :max_area
 WHERE id = :id
@@ -22,8 +22,8 @@ WHERE id = :id
 -- name: raw-area_data-create<!
 -- create new area_data
 INSERT INTO area_data
-       (max_area address name)
-VALUES (:max_area :address :name)
+       (max_area, address, name)
+VALUES (:max_area, :address, :name)
 
 -- name: raw-area_data-delete!
 -- delete area_data

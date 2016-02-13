@@ -18,17 +18,18 @@
 
 
 (defn area_data []
-  (GET "/" []
-       (friend/authorize
-        #{::auth/admin}
-        (response (db/raw-area_data-all))))
-  (POST "/" [max_area address name]
+  (routes
+   (GET "/" []
         (friend/authorize
          #{::auth/admin}
-         (response (db/area_data-create<!
-                    {:max_area max_area
-                     :address address
-                     :name name})))))
+         (response (db/raw-area_data-all))))
+   (POST "/" [max_area address name]
+         (friend/authorize
+          #{::auth/admin}
+          (response (db/area_data-create<!
+                     {:max_area max_area
+                      :address address
+                      :name name}))))))
 
 
 (defn mesurments [experiment_id]
