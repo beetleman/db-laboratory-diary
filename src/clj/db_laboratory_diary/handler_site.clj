@@ -54,6 +54,7 @@
   (GET "/login" [] loading-page)
   (GET "/users" [] loading-page)
   (GET "/experiments" [] loading-page)
+  (GET "/area_data" [] loading-page)
   (friend/logout (ANY "/logout" request (ring.util.response/redirect "/")))
   (resources "/"))
 

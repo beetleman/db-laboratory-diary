@@ -12,6 +12,15 @@
 (defquery tables "db/tables.sql" {:connection db})
 
 ;; UTILS
+(defmulti str->int class)
+(defmethod str->int String [s]
+  (try
+    (Integer. s)
+    (catch Exception e nil)))
+(defmethod str->int Number [n]
+  n)
+
+
 (def error-message
   "deffault error mesage"
   "Wrong data!")
@@ -115,7 +124,8 @@
 ;; AREA_DATA
 
 (defqueries "db/area_data.sql" {:connection db})
-(defquery-with-message area_data-create<! raw-area_data-create<!)
+(defquery-with-message area_data-create<! raw-area_data-create<! error-message
+  {:max_area str->int})
 
 
 ;; SURFACES

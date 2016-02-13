@@ -10,6 +10,7 @@
             [db-laboratory-diary.login :refer [login-page]]
             [db-laboratory-diary.users :refer [users-page]]
             [db-laboratory-diary.experiments :refer [experiments-page]]
+            [db-laboratory-diary.area_data :refer [area_data-page]]
             [db-laboratory-diary.home :refer [home-page]]))
 
 ;; ------------------------
@@ -54,8 +55,12 @@
         [:users "users"]))
 
 (secretary/defroute "/experiments" []
-  (site app-state #'experiments-page auth/is_admin?
+  (site app-state #'experiments-page auth/is_user?
         [:experiments "experiments"]))
+
+(secretary/defroute "/area_data" []
+  (site app-state #'area_data-page auth/is_user?
+        [:area_data "area_data"]))
 
 
 ;; -------------------------
