@@ -8,7 +8,6 @@
             [reagent.core :as r]))
 
 
-
 (defn experiments-page [state]
   [:div {:class "container"}
    [:h2 "Experiments"]])
