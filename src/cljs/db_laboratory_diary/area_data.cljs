@@ -8,14 +8,8 @@
             [reagent.core :as r]))
 
 
-
 (defn area_data-table [state]
-  [:div {:class "panel panel-default"}
-   [:div {:class "panel-heading"}
-    "Area data list"
-    [:div.pull-right
-     [:button {:class "btn btn-success btn-xs" :on-click (e/on-add state)}
-      "Add"]]]
+  [tables/header state "Area data list"
    [tables/table (:area_data @state)
     {:name "Name"
      :address "Address"

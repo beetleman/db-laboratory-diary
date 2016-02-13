@@ -7,6 +7,13 @@ FROM experiments
 -- Get all experiments
 SELECT * FROM experiments
 
+-- name: raw-experiments-with-area_data-all
+-- Get all experiments
+SELECT * FROM experiments
+INNER JOIN area_data
+ON experiments.area_data = area_data.id
+
+
 -- name: raw-experiments-get
 -- get experiment by id
 SELECT * FROM experiments WHERE id = :id

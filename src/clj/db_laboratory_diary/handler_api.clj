@@ -53,7 +53,7 @@
    (GET "/" []
         (friend/authorize
          #{::auth/admin}
-         (response (db/raw-experiments-all))))
+         (response (db/raw-experiments-with-area_data-all))))
    (POST "/" [manager_id area_data_id fertilizer
               start_date stop_date]
          (friend/authorize

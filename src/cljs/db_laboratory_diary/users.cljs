@@ -6,11 +6,7 @@
             [reagent.core :as r]))
 
 (defn users-table [state]
-  [:div {:class "panel panel-default"}
-   [:div {:class "panel-heading"} "Users list"
-    [:div.pull-right
-     [:button {:class "btn btn-success btn-xs" :on-click (e/on-add state)}
-      "Add"]]]
+  [tables/header state "Users list"
    [tables/table (:users @state)
     {:username "Username"
      :lastname "Lastname"

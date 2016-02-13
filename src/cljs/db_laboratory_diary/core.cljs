@@ -56,7 +56,9 @@
 
 (secretary/defroute "/experiments" []
   (site app-state #'experiments-page auth/is_user?
-        [:experiments "experiments"]))
+        [:experiments "experiments"]
+        [:area_data "area_data"]
+        [:users "users"]))
 
 (secretary/defroute "/area_data" []
   (site app-state #'area_data-page auth/is_user?
