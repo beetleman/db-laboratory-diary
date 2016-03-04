@@ -36,7 +36,7 @@
              :migration-dir "db/migrations/"
              :db ~(get (System/getenv)
                        "DATABASE_URL"
-                       "postgresql://db_laboratory_diary:qwerty@localhost:5432/db_laboratory_diary")}
+                       "postgresql://postgres@localhost:5432/postgres")}
 
   :ring {:handler db-laboratory-diary.handler/app
          :uberwar-name "db-laboratory-diary.war"}
@@ -96,7 +96,7 @@
                               :ring-handler db-laboratory-diary.handler/app}
 
                    :env {:dev true
-                         :db-url "postgresql://db_laboratory_diary:qwerty@localhost:5432/db_laboratory_diary"}
+                         :db-url "postgresql://postgres@localhost:5432/postgres"}
 
                    :cljsbuild {:builds {:app {:source-paths ["env/dev/cljs"]
                                               :compiler {:main "db-laboratory-diary.dev"
