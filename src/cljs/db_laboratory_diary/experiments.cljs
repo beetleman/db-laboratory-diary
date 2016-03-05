@@ -9,25 +9,23 @@
   [tables/header state "Experiments list"
    [tables/table (:experiments @state)
     {:start_date "Start"
-     :end_data "End"
+     :stop_date "Stop"
      :fertilizer "Fertilizer"}]])
 
 
 (defn on-add-experiment-fn [state]
   (form/on-add-fn state :experiment "experiments" "/experiments" "Experiment added"
-                  (fn [experiment] (if (:is_admin experiment)
-                               (assoc experiment :is_admin true)
-                               (assoc experiment :is_admin false)))))
+                  (fn [experiment] experiment)))
 
 
 (defn add-experiment-form [state]
   [:form {:on-submit (on-add-experiment-fn state)}
-   [form/form-group-select (:users @state) {:value :id :text :username} "Manager" "manager"]
-   [form/form-group-select (:users @state) {:value :id :text :username} "Laborants" "laborants"
+   [form/form-group-select (:users @state) {:value :id :text :username} "Manager" "manager_id"]
+   [form/form-group-select (:users @state) {:value :id :text :username} "Laborants" "laborants_ids"
     {:multiple true}]
-   [form/form-group-select (:area_data @state) {:value :id :text :address} "Data area" "data_area"]
+   [form/form-group-select (:area_data @state) {:value :id :text :address} "Area data" "area_data_id"]
    [form/form-group-input "Start" "start_date" {:type "date"}]
-   [form/form-group-input "End" "end_date" {:type "date"}]
+   [form/form-group-input "End" "stop_date" {:type "date"}]
    [form/form-checkbox "Fertilizer" "fertilizer"]
    [form/form-yes-no (e/on-view state)]])
 
