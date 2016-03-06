@@ -54,12 +54,13 @@
         (friend/authorize
          #{::auth/admin}
          (response (db/raw-experiments-with-area_data-all))))
-   (POST "/" [manager_id area_data_id fertilizer
+   (POST "/" [manager_id laborants_ids area_data_id fertilizer
               start_date stop_date]
          (friend/authorize
           #{::auth/admin}
           (response (db/experiments-create<!
                      {:manager_id manager_id
+                      :laborants_ids laborants_ids
                       :area_data_id area_data_id
                       :fertilizer fertilizer
                       :start_date start_date

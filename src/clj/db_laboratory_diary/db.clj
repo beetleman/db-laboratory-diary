@@ -1,5 +1,6 @@
 (ns db-laboratory-diary.db
   (:require [yesql.core :refer [defquery defqueries]]
+            [clojure.java.jdbc :as jdbc]
             [cheshire.generate :refer [add-encoder encode-str remove-encoder]]
             [cheshire.custom :as custom]
             [environ.core :refer [env]]
@@ -31,6 +32,9 @@
 (defmethod str->int Number [n]
   n)
 
+(defn str->vector-int [s]
+  (filterv (complement nil?)
+          (map str->int (clojure.string/split s #","))))
 
 (def error-message
   "deffault error mesage"
@@ -151,18 +155,44 @@
 
 (defqueries "db/experiments.sql" {:connection db})
 
+(defn update-experiment-laborants! [experiment laborants_ids]
+  (let [experiment_id (:id experiment)
+        old (map :id (raw-laborants_experiments-for-experiment
+                      {:experiment_id experiment_id}))
+        old (set old)
+        new (set laborants_ids)
+        to-add (clojure.set/difference new old)
+        to-delete (clojure.set/difference old new)]
+    (try (jdbc/with-db-transaction [tx db]
+           (mapv (fn [id] (raw-add-laborant-to-experiment<!
+                           {:experiment_id experiment_id
+                            :laborant_id id}
+                           {:connection tx}))
+                 to-add)
+           (mapv (fn [id] (raw-delete-laborant-from-experiment!
+                           {:experiment_id experiment_id
+                            :laborant_id id}
+                           {:connection tx}))
+                 to-delete))
+         (get-success-message (assoc experiment :laborants_ids laborants_ids))
+         (catch Exception e (get-error-message "Errors in references!" e)))))
+
 (defn experiments-create<! [experiment]
-  (let [experiment (convert experiment {:manager_id str->int
-                                        :area_data_id str->int
-                                        :fertilizer boolean
-                                        :stop_date timef/parse
-                                        :start_date timef/parse})
+  (let [laborants_ids (-> experiment :laborants_ids str->vector-int)
+        experiment (convert (dissoc experiment :laborants_ids)
+                            {:manager_id str->int
+                             :area_data_id str->int
+                             :fertilizer boolean
+                             :stop_date timef/parse
+                             :start_date timef/parse})
         start_date (:start_date experiment)
         stop_date (:stop_date experiment)]
     (if (and stop_date start_date (timec/after? stop_date start_date))
-      (try
-        (get-success-message (raw-experiments-create<! experiment))
-        (catch Exception e (get-error-message "Errors in referencces!" e)))
+      (try (jdbc/with-db-transaction [tx db]
+             (update-experiment-laborants!
+              (raw-experiments-create<! experiment {:connection tx})
+              laborants_ids))
+           (catch Exception e (get-error-message "Errors in references!" e)))
       (get-error-message "Errors in 'start date' or 'stop date'!"))))
 
 
@@ -170,7 +200,7 @@
   (if-let [experiment (raw-experiments-get args)]
     (merge experiment
            {:manager (first (raw-users-get
-                      {:id (:manager experiment)}))
+                             {:id (:manager experiment)}))
             :area_data (first (raw-area_data-get
                                {:id (:area_data experiment)}))
             :surfaces (raw-surfaces-get-by-experiment args)

@@ -40,6 +40,15 @@ UPDATE experiments
 SET stop_date = :stop_date
 WHERE id = :id
 
+-- name: raw-laborants_experiments-for-experiment
+-- Get all laborants_experiments
+SELECT * from laborants_experiments
+WHERE experiment = :experiment_id
+
+-- name: raw-all-laborants_experiments
+-- Get all laborants_experiments
+SELECT * from laborants_experiments
+
 -- name: raw-add-laborant-to-experiment<!
 -- add laborant to experiment
 INSERT INTO laborants_experiments
