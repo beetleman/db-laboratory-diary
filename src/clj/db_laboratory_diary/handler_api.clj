@@ -70,7 +70,7 @@
                  (friend/authorize
                   #{::auth/user}
                   (response (db/experiments-get
-                             {:experiment_id experiment_id}))))
+                             {:id experiment_id}))))
             (POST "/laborants" [laborant_id]
                   (friend/authorize
                    #{::auth/admin}

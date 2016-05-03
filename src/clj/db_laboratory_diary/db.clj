@@ -200,15 +200,21 @@
       (get-error-message "Errors in 'start date' or 'stop date'!"))))
 
 
-(defn experiments-get [args]
-  (if-let [experiment (raw-experiments-get args)]
-    (merge experiment
-           {:manager (first (raw-users-get
-                             {:id (:manager experiment)}))
-            :area_data (first (raw-area_data-get
-                               {:id (:area_data experiment)}))
-            :surfaces (raw-surfaces-get-by-experiment args)
-            :laborants (raw-all-laborant-for-experiment args)})))
+(defn experiments-get [{:keys [id]}]
+  (let [id (str->int id)]
+    (if-let [experiment (first (raw-experiments-get {:id id}))]
+      (merge experiment
+             {:manager (-> (raw-users-get
+                            {:id (:manager experiment)})
+                           first
+                           (select-keys user-fields-public))
+              :area_data (first (raw-area_data-get
+                                 {:id (:area_data experiment)}))
+              :surfaces (raw-surfaces-get-by-experiment
+                         {:experiment_id id})
+              :laborants (map #(select-keys % user-fields-priv)
+                              (raw-all-laborant-for-experiment
+                               {:experiment_id id}))}))))
 
 
 (defquery-with-message

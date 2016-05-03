@@ -14,7 +14,7 @@
   (msg* state :success-msg "danger"))
 
 (defn login-btn [state]
-  [:a {:href "login"}
+  [:a {:href "/login"}
    [:button {:type "submit" :class "btn btn-success"}
     "Sign in"]])
 

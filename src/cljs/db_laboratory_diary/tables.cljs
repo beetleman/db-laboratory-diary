@@ -2,7 +2,6 @@
   (:require [db-laboratory-diary.events :as e]))
 
 (defn table-tr [tag data order actions]
-  (-> {:actions actions} clj->js js/console.debug)
   (into [:tr]
         (into (mapv (fn [k] [tag (str (k data))]) order)
               (mapv (fn [a] [tag [a data]]) actions))))

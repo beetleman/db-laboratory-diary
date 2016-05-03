@@ -39,11 +39,8 @@
                      :required required}
                     params)]]))
 
-(defn form-group-select [data {:keys [value text]} label name {:keys [multiple]}]
-  (let [id (str "select" name)
-        params (if multiple
-                 {:multiple true}
-                 {})]
+(defn form-group-select [data {:keys [value text]} label name params]
+  (let [id (str "select" name)]
     [form-group label id
      [:select (merge {:class "form-control"
                       :id id
@@ -53,10 +50,12 @@
         ^{:key (value d)} [:option {:value (value d)} (text d)])]]))
 
 
-(defn form-checkbox [label name]
-  [:div.checkbox
-   [:label
-    [:input {:type "checkbox" :name name}] label]])
+(defn form-checkbox [label name & [params]]
+  (let [params (merge {:type "checkbox" :name name}
+                      (or params {}))]
+    [:div.checkbox
+     [:label
+      [:input params] label]]))
 
 
 (defn form-yes-no [cancel-event]
