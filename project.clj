@@ -78,7 +78,7 @@
 
                    :source-paths ["env/dev/clj"]
                    :plugins [[lein-figwheel "0.5.0-SNAPSHOT"]
-                             [cider/cider-nrepl "0.12.0-SNAPSHOT"]
+                             [cider/cider-nrepl "0.13.0-SNAPSHOT"]
                              [refactor-nrepl "2.0.0-SNAPSHOT"]
                              [lein-less "1.7.5"]]
 
