@@ -33,8 +33,10 @@
   n)
 
 (defn str->vector-int [s]
-  (filterv (complement nil?)
-          (map str->int (clojure.string/split s #","))))
+  (if (nil? s)
+    []
+    (filterv (complement nil?)
+             (map str->int (clojure.string/split s #",")))))
 
 (def error-message
   "deffault error mesage"
@@ -159,24 +161,24 @@
   ([experiment laborants_ids]
    (update-experiment-laborants! experiment laborants_ids db))
   ([experiment laborants_ids tx]
-  (let [experiment_id (:id experiment)
-        old (map :id (raw-laborants_experiments-for-experiment
-                      {:experiment_id experiment_id}))
-        old (set old)
-        new (set laborants_ids)
-        to-add (clojure.set/difference new old)
-        to-delete (clojure.set/difference old new)]
-    (mapv (fn [id] (raw-add-laborant-to-experiment<!
-                    {:experiment_id experiment_id
-                     :laborant_id id}
-                    {:connection tx}))
-          to-add)
-    (mapv (fn [id] (raw-delete-laborant-from-experiment!
-                    {:experiment_id experiment_id
-                     :laborant_id id}
-                    {:connection tx}))
-          to-delete)
-    (get-success-message (assoc experiment :laborants_ids laborants_ids)))))
+   (let [experiment_id (:id experiment)
+         old (map :id (raw-laborants_experiments-for-experiment
+                       {:experiment_id experiment_id}))
+         old (set old)
+         new (set laborants_ids)
+         to-add (clojure.set/difference new old)
+         to-delete (clojure.set/difference old new)]
+     (mapv (fn [id] (raw-add-laborant-to-experiment<!
+                     {:experiment_id experiment_id
+                      :laborant_id id}
+                     {:connection tx}))
+           to-add)
+     (mapv (fn [id] (raw-delete-laborant-from-experiment!
+                     {:experiment_id experiment_id
+                      :laborant_id id}
+                     {:connection tx}))
+           to-delete)
+     (get-success-message (assoc experiment :laborants_ids laborants_ids)))))
 
 
 (defn experiments-create<! [experiment]
