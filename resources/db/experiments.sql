@@ -13,6 +13,16 @@ SELECT * FROM experiments
 INNER JOIN area_data
 ON experiments.area_data = area_data.id
 
+-- name: raw-all-experiments-for-user-all
+-- Get all experiments for user
+SELECT *
+FROM experiments
+INNER JOIN area_data
+ON experiments.area_data = area_data.id
+INNER JOIN laborants_experiments
+ON experiments.id = laborants_experiments.experiment
+WHERE laborants_experiments.laborant = :user_id OR experiments.manager = :user_id
+
 
 -- name: raw-experiments-get
 -- get experiment by id
@@ -67,16 +77,6 @@ SELECT users.id, users.firstname, users.lastname, users.username,
 FROM users
 INNER JOIN laborants_experiments
       ON users.id = laborants_experiments.laborant
-WHERE laborants_experiments.experiment = :experiment_id
-
--- name: raw-all-experiments-for-laborant
--- get all experiments for user
-SELECT experiments.id, experiments.manager, experiments.area_data,
-       experiments.fertilizer, experiments.start_date,
-       experiments.stop_date, experiments.create_data
-FROM experiments
-INNER JOIN laborants_experiments
-      ON experiments.id = laborants_experiments.experiment
 WHERE laborants_experiments.experiment = :experiment_id
 
 -- name: raw-add-surface-to-experiment<!

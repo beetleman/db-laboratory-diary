@@ -30,8 +30,9 @@
   [{:name "About" :href "/about" :auth auth/is_user?}
    {:name "Home" :href "/" :auth auth/is_anybody?}
    {:name "Users" :href "/users" :auth auth/is_admin?}
-   {:name "Experiments" :href "/experiments" :auth auth/is_user?}
-   {:name "Area data" :href "/area_data" :auth auth/is_user?}])
+   {:name "Experiments" :href "/experiments" :auth auth/is_admin?}
+   {:name "My Experiments" :href "/my-experiments" :auth auth/is_user?}
+   {:name "Area data" :href "/area_data" :auth auth/is_admin?}])
 
 (defn header-links [state]
   (into [:ul {:class "nav navbar-nav"}]

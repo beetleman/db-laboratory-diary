@@ -13,10 +13,6 @@
             [db-laboratory-diary.db :as db]))
 
 
-(defn users [& fields]
-  (select-keys (db/raw-users-all)))
-
-
 (defn area_data []
   (routes
    (GET "/" []
@@ -35,24 +31,24 @@
 (defn mesurments [experiment_id]
   (routes
    (context "/:surface_id" [surface_id]
-    (GET "/mesurment" []
-         (friend/authorize
-          #{::auth/user}
-          (response (db/all-mesurments-for-surfaces
-                     {:surface_id surface_id}))))
-    (POST "/mesurment" [success]
-          (friend/authorize
-           #{::auth/user}
-           (response (db/add-mesurment-to-surfaces<!
-                      {:surface_id surface_id
-                       :success success})))))))
+            (GET "/mesurment" []
+                 (friend/authorize
+                  #{::auth/user}
+                  (response (db/all-mesurments-for-surfaces
+                             {:surface_id surface_id}))))
+            (POST "/mesurment" [success]
+                  (friend/authorize
+                   #{::auth/user}
+                   (response (db/add-mesurment-to-surfaces<!
+                              {:surface_id surface_id
+                               :success success})))))))
 
 
 (defn experiments []
   (routes
    (GET "/" []
         (friend/authorize
-         #{::auth/admin}
+         #{::auth/user}
          (response (db/raw-experiments-with-area_data-all))))
    (POST "/" [manager_id laborants_ids area_data_id fertilizer
               start_date stop_date]
@@ -78,11 +74,11 @@
                               {:experiment_id experiment_id
                                :laborant_id laborant_id}))))
             (DELETE "/laborants" [laborant_id]
-                  (friend/authorize
-                   #{::auth/admin}
-                   (response (db/delete-laborant-from-experiment!
-                              {:experiment_id experiment_id
-                               :laborant_id laborant_id}))))
+                    (friend/authorize
+                     #{::auth/admin}
+                     (response (db/delete-laborant-from-experiment!
+                                {:experiment_id experiment_id
+                                 :laborant_id laborant_id}))))
             (POST "/surfaces" [area]
                   (friend/authorize
                    #{::auth/admin}
@@ -121,6 +117,13 @@
                     (area_data))
            (context "/experiments" []
                     (experiments))
+           (GET "/my_experiments" req
+                (friend/authorize
+                 #{::auth/user}
+                 (response (db/raw-all-experiments-for-user-all
+                            {:user_id (-> req
+                                          (auth/current-user)
+                                          :id)}))))
            (context "/users" []
                     (users))))
 

@@ -11,6 +11,9 @@
             [db-laboratory-diary.users :refer [users-page]]
             [db-laboratory-diary.experiments :refer [experiments-page
                                                      experiment-page]]
+            [db-laboratory-diary.my-experiments :refer [my-experiments-page
+                                                        my-experiment-page
+                                                        my-experiment-add-mesurment-page]]
             [db-laboratory-diary.area_data :refer [area_data-page]]
             [db-laboratory-diary.home :refer [home-page]]))
 
@@ -55,22 +58,37 @@
   (site app-state #'users-page auth/is_admin?
         [:users "users"]))
 
+(secretary/defroute "/my-experiments" []
+  (site app-state #'my-experiments-page auth/is_user?
+        [:my-experiments "my_experiments"]))
+
+
+(secretary/defroute "/my-experiments/:id" {:as params}
+  (site app-state #'my-experiment-page auth/is_user?
+        [:my-experiments "my_experiments"]
+        [:my-experiment (str "experiments" "/" (:id params))]))
+
+
+(secretary/defroute "/my-experiments/:id/add-mesurment" {:as params}
+  (site app-state #'my-experiment-add-mesurment-page auth/is_user?
+        [:my-experiments "my_experiments"]
+        [:my-experiment (str "experiments" "/" (:id params))]))
+
 (secretary/defroute "/experiments" []
-  (site app-state #'experiments-page auth/is_user?
+  (site app-state #'experiments-page auth/is_admin?
         [:experiments "experiments"]
         [:area_data "area_data"]
         [:users "users"]))
 
-
 (secretary/defroute "/experiments/:id" {:as params}
-  (site app-state #'experiment-page auth/is_user?
+  (site app-state #'experiment-page auth/is_admin?
         [:experiment (str "experiments" "/" (:id params))]
         [:area_data "area_data"]
         [:users "users"]))
 
 
 (secretary/defroute "/area_data" []
-  (site app-state #'area_data-page auth/is_user?
+  (site app-state #'area_data-page auth/is_admin?
         [:area_data "area_data"]))
 
 

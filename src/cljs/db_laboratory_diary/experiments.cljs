@@ -3,25 +3,16 @@
             [db-laboratory-diary.events :as e]
             [db-laboratory-diary.form :as form]
             [accountant.core :as accountant]
-            [cljs-time.core :as time]
-            [cljs-time.format :as time-format]
+            [db-laboratory-diary.date :as date]
             [reagent-forms.core :refer [bind-fields]]
             [reagent.core :as r]))
 
 
-(defn parse-date [s]
-  (if (nil? s)
-    nil
-    (let [fmt (time-format/formatter "yyyy-MM-dd")]
-      (->> s
-           time-format/parse
-           (time-format/unparse fmt)))))
-
 (defn experiments-table [state]
   [tables/header state "Experiments list"
    [tables/table (map (fn [e]
-                        (merge e {:start_date (-> e :start_date parse-date)
-                                  :stop_date (-> e :stop_date parse-date)}))
+                        (merge e {:start_date (-> e :start_date date/parse)
+                                  :stop_date (-> e :stop_date date/parse)}))
                       (:experiments @state))
     {:start_date "Start"
      :stop_date "Stop"
@@ -66,8 +57,8 @@
                      {:manager_id (get-in experiment [:manager :id])
                       :laborants_ids (map :id (get-in experiment [:laborants]))
                       :area_data_id (get-in experiment [:area_data :id])
-                      :start_date (-> experiment :start_date parse-date)
-                      :stop_date (-> experiment :stop_date parse-date)
+                      :start_date (-> experiment :start_date date/parse)
+                      :stop_date (-> experiment :stop_date date/parse)
                       :fertilizer (:fertilizer experiment)})))
 
 
