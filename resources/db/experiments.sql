@@ -83,7 +83,7 @@ WHERE laborants_experiments.experiment = :experiment_id
 -- add laborant to experiment
 INSERT INTO surfaces
        (experiment, area)
-VALUES (:experiment_id, :area)
+VALUES (:experiment_id, :area_id)
 
 -- name: raw-all-surfaces-for-experiment
 -- get all surfaces for experiment

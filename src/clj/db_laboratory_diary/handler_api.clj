@@ -120,7 +120,7 @@
            (GET "/my_experiments" req
                 (friend/authorize
                  #{::auth/user}
-                 (response (db/raw-all-experiments-for-user-all
+                 (response (db/all-experiments-for-user-all
                             {:user_id (-> req
                                           (auth/current-user)
                                           :id)}))))
@@ -130,6 +130,7 @@
 
 (def api
   (let [handler (wrap-defaults #'api-routes api-defaults)]
+    (db/default-admin-create<!)
     (if (env :dev)
       (-> handler (friend/authenticate
                    {:credential-fn auth/credential-fn

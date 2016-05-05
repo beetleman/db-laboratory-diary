@@ -180,6 +180,13 @@
            to-delete)
      (get-success-message (assoc experiment :laborants_ids laborants_ids)))))
 
+(defn add-surfaces-to-experiment<!* [experiment tx]
+  (let [area_data (-> (raw-area_data-get {:id (:area_data experiment)}) first)]
+    (mapv (fn [_]
+            (raw-add-surface-to-experiment<! {:experiment_id (:id experiment)
+                                              :area_id (:id area_data)}
+                                             {:connection tx}))
+          (-> area_data :max_area range))))
 
 (defn experiments-create<! [experiment]
   (let [laborants_ids (-> experiment :laborants_ids str->vector-int)
@@ -193,9 +200,9 @@
         stop_date (:stop_date experiment)]
     (if (and stop_date start_date (timec/after? stop_date start_date))
       (try (jdbc/with-db-transaction [tx db]
-             (update-experiment-laborants!
-              (raw-experiments-create<! experiment {:connection tx})
-              laborants_ids tx))
+             (let [experiment (raw-experiments-create<! experiment {:connection tx})]
+               (add-surfaces-to-experiment<!* experiment tx)
+               (update-experiment-laborants! experiment laborants_ids tx)))
            (catch Exception e (get-error-message "Errors in references!" e)))
       (get-error-message "Errors in 'start date' or 'stop date'!"))))
 
@@ -216,6 +223,12 @@
                               (raw-all-laborant-for-experiment
                                {:experiment_id id}))}))))
 
+(defn all-experiments-for-user-all [args]
+  (let [experiments (raw-all-experiments-for-user-all args)
+        laborants_experiments (group-by :experiment (raw-all-laborants_experiments))]
+    (map (fn [e] (assoc e :laborants_ids
+                        (map :laborant (-> e :id laborants_experiments))))
+         experiments)))
 
 (defquery-with-message
   add-surface-to-experiment<!
