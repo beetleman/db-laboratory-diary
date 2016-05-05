@@ -117,10 +117,53 @@
         rows)]]]))
 
 
+(defn experiment-mesurments-day-table-td [m]
+  [:td [:dl.dl-horizontal
+        [:dt "Yes: "] [:dd (:yes m)]
+        [:dt "No: "] [:dd (:no m)]]])
+
+(defn experiment-mesurments-day-table [mesurments colls]
+  (let [rows (partition-all colls mesurments)]
+    [:table.table.table-bordered
+     [:tbody
+      (map-indexed
+       (fn [idx r]
+         ^{:key idx} [:tr
+                      (map-indexed
+                       (fn [idx m]
+                         ^{:key idx} [experiment-mesurments-day-table-td m])
+                       r)])
+       rows)]]))
+
+
+(defn experiment-mesurments-day [mesurments]
+  (let [mesurments-by-surface (group-by :surface mesurments)
+        mesurments-calculated (map (fn [[_ m]]
+                                     (let [m-by-success (group-by :success m)]
+                                       (logger/debug :m-by-success (str m-by-success))
+                                       {:yes (count (get m-by-success true))
+                                        :no (count (get m-by-success false))}))
+                                   mesurments-by-surface)]
+    [experiment-mesurments-day-table mesurments-calculated 4]))
+
+(defn experiment-mesurments [mesurments]
+  (let [mesurments (map #(update % :create_data date/create_data->date) mesurments)
+        mesurments-by-date (group-by :create_data mesurments)]
+    (logger/debug :mesurments mesurments-by-date)
+    [:div
+     (map-indexed
+      (fn [idx [d m]]
+        ^{:key idx} [:div
+                     [:h2 d]
+                     [experiment-mesurments-day m]])
+      mesurments-by-date)]))
+
 (defn my-experiment-page [state]
+  (logger/debug :state @state)
   [:div {:class "container"}
    [:h2 (str "Experiment #" (get-in @state [:my-experiment :id]))]
-   [experiments/experiment-details (:my-experiment @state)]])
+   [experiments/experiment-details (:my-experiment @state)]
+   [experiment-mesurments (get-in @state [:my-experiment-mesurments :data])]])
 
 
 (defn my-experiment-add-mesurment-page [state]

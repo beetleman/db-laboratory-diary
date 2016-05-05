@@ -27,6 +27,15 @@ SELECT * FROM mesurments
 WHERE surfaces = :surfaces_id
 
 
+-- name: raw-all-mesurments-for-experiment
+-- get all mesurments for experiment
+SELECT *
+FROM surfaces
+INNER JOIN mesurments
+ON surfaces.id = mesurments.surface
+WHERE surfaces.experiment = :experiment_id
+
+
 -- name: raw-surfaces-delete!
 -- delete surface
 DELETE FROM surfaces

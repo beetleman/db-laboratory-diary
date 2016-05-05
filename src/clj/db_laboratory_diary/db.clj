@@ -38,6 +38,12 @@
     (filterv (complement nil?)
              (map str->int (clojure.string/split s #",")))))
 
+(defn str->boolean [s]
+  (cond
+    (= s "false") false
+    (= s "true") true
+    :default (boolean s)))
+
 (def error-message
   "deffault error mesage"
   "Wrong data!")
@@ -155,7 +161,7 @@
 (defn add-mesurments-to-expetiment<! [mesurments]
   (try (jdbc/with-db-transaction [tx db]
          (mapv #(raw-add-mesurment-to-surfaces<! (convert % {:surface_id str->int
-                                                             :success boolean})
+                                                             :success str->boolean})
                                                  {:connection tx}) mesurments)
          (get-success-message "OK"))
        (catch Exception e (get-error-message "Something bad happened!" e))))
@@ -262,3 +268,10 @@
   all-mesurments-for-surfaces
   raw-all-mesurments-for-surfaces
   "Surface dont exist")
+
+
+(defquery-with-message
+  all-mesurments-for-experiment
+  raw-all-mesurments-for-experiment
+  "Experiment dont exist"
+  {:experiment_id str->int})

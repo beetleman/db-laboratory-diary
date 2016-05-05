@@ -65,7 +65,7 @@
 
 (secretary/defroute "/my-experiments/:id" {:as params}
   (site app-state #'my-experiment-page auth/is_user?
-        [:my-experiments "my_experiments"]
+        [:my-experiment-mesurments (str "experiments" "/" (:id params)  "/mesurments")]
         [:my-experiment (str "experiments" "/" (:id params))]))
 
 

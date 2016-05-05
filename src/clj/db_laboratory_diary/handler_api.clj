@@ -72,7 +72,8 @@
             (GET "/mesurments" []
                  (friend/authorize
                   #{::auth/user}
-                  (response {:msg "noope"})))
+                  (response (db/all-mesurments-for-experiment
+                             {:experiment_id experiment_id}))))
             (POST "/mesurments" req
                   (friend/authorize
                    #{::auth/user}
