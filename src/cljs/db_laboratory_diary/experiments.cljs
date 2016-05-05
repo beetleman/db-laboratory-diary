@@ -62,6 +62,16 @@
                       :fertilizer (:fertilizer experiment)})))
 
 
+(defn experiment-details [experiment]
+  [:dl.dl-horizontal
+   [:dt "Manager:"] [:dd (get-in experiment [:manager :username])]
+   [:dt "Laborants:"] [:dd (apply str (interpose ", " (map :username (:laborants experiment))))]
+   [:dt "Start:"] [:dd (-> experiment :start_date date/parse)]
+   [:dt "End:"] [:dd (-> experiment :stop_date date/parse)]
+   [:dt "Area Name:"] [:dd (get-in experiment [:area_data :name])]
+   [:dt "Area Address:"] [:dd (get-in experiment [:area_data :address])]
+   [:dt "Fertilizer:"] [:dd (-> experiment :fertilizer str)]])
+
 
 (defn experiments-page [state]
   [:div {:class "container"}
@@ -72,4 +82,5 @@
 
 (defn experiment-page [state]
   [:div {:class "container"}
-   [edit-experiment-form state]])
+   [:h2 (str "Experiment #" (get-in @state [:experiment :id]))]
+   [experiment-details (:experiment @state)]])
