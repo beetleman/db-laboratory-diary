@@ -5,6 +5,7 @@
                                               wrap-defaults]]
             [hiccup.core :refer [html]]
             [cemerick.friend :as friend]
+            [db-laboratory-diary.db :as db]
             [hiccup.page :refer [include-js include-css]]
             [prone.middleware :refer [wrap-exceptions]]
             [ring.middleware.reload :refer [wrap-reload]]
@@ -49,7 +50,9 @@
      (include-js "js/app.js")]]))
 
 (defroutes site-routes
-  (GET "/" [] loading-page)
+  (GET "/" [] (do
+                (db/default-admin-create<!)
+                loading-page))
   (GET "/about" [] loading-page)
   (GET "/login" [] loading-page)
   (GET "/users" [] loading-page)

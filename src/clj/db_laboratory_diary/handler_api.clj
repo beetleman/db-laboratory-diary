@@ -130,7 +130,6 @@
 
 (def api
   (let [handler (wrap-defaults #'api-routes api-defaults)]
-    (db/default-admin-create<!)
     (if (env :dev)
       (-> handler (friend/authenticate
                    {:credential-fn auth/credential-fn
