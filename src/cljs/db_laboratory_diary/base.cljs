@@ -27,12 +27,12 @@
      [login-btn state])])
 
 (def header-links-def
-  [{:name "About" :href "/about" :auth auth/is_user?}
-   {:name "Home" :href "/" :auth auth/is_anybody?}
+  [{:name "Home" :href "/" :auth auth/is_anybody?}
    {:name "Users" :href "/users" :auth auth/is_admin?}
    {:name "Experiments" :href "/experiments" :auth auth/is_admin?}
    {:name "My Experiments" :href "/my-experiments" :auth auth/is_user?}
-   {:name "Area data" :href "/area_data" :auth auth/is_admin?}])
+   {:name "Area data" :href "/area_data" :auth auth/is_admin?}
+   {:name "About" :href "/about" :auth auth/is_user?}])
 
 (defn header-links [state]
   (into [:ul {:class "nav navbar-nav"}]
@@ -45,7 +45,7 @@
              (filter (fn [v] ((:auth v) @state))  header-links-def))))
 
 (defn header [state]
-  [:nav {:class "navbar navbar-inverse navbar-fixed-top"}
+  [:nav {:class "navbar navbar-default navbar-fixed-top"}
    [:div {:class "container"}
     [:div {:class "navbar-header"}
      [:button {:type "button"

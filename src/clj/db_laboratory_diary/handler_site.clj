@@ -32,18 +32,13 @@
      [:meta {:name "viewport"
              :content "width=device-width, initial-scale=1"}]
      (if (:dev env)
-       [:title "evn: DEV"])
-     [:link {:rel "stylesheet"
-             :href "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
-             :integrity "sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
-             :crossorigin "anonymous"}]
-     [:link {:rel "stylesheet"
-             :href "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css"
-             :integrity "sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r"
-             :crossorigin "anonymous"}]
+       [:title "evn: DEV"]
+       [:title "DB-LABORATORY-DIARY"])
+
      [:link {:rel "stylesheet"
              :href "https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"}]
 
+     (include-css (if (env :dev) "css/bootstrap.css" "css/bootstrap.min.css"))
      (include-css (if (env :dev) "css/site.css" "css/site.min.css"))]
     [:body
      mount-target
