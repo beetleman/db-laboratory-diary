@@ -152,6 +152,14 @@
 
 (defqueries "db/surfaces.sql" {:connection db})
 
+(defn add-mesurments-to-expetiment<! [mesurments]
+  (try (jdbc/with-db-transaction [tx db]
+         (mapv #(raw-add-mesurment-to-surfaces<! (convert % {:surface_id str->int
+                                                             :success boolean})
+                                                 {:connection tx}) mesurments)
+         (get-success-message "OK"))
+       (catch Exception e (get-error-message "Something bad happened!" e))))
+
 
 ;; EXPERIMENTS
 

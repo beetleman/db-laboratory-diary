@@ -28,22 +28,6 @@
                       :name name}))))))
 
 
-(defn mesurments [experiment_id]
-  (routes
-   (context "/:surface_id" [surface_id]
-            (GET "/mesurment" []
-                 (friend/authorize
-                  #{::auth/user}
-                  (response (db/all-mesurments-for-surfaces
-                             {:surface_id surface_id}))))
-            (POST "/mesurment" [success]
-                  (friend/authorize
-                   #{::auth/user}
-                   (response (db/add-mesurment-to-surfaces<!
-                              {:surface_id surface_id
-                               :success success})))))))
-
-
 (defn experiments []
   (routes
    (GET "/" []
@@ -85,8 +69,17 @@
                    (response (db/add-laborant-to-experiment<!
                               {:experiment_id experiment_id
                                :area area}))))
-            (context "/mesurments" []
-                     (mesurments experiment_id)))))
+            (GET "/mesurments" []
+                 (friend/authorize
+                  #{::auth/user}
+                  (response {:msg "noope"})))
+            (POST "/mesurments" req
+                  (friend/authorize
+                   #{::auth/user}
+                   (response (let [mesurments (map (fn [[id success]]
+                                                     {:surface_id id :success success})
+                                                   (:form-params req))]
+                               (db/add-mesurments-to-expetiment<! mesurments))))))))
 
 
 (defn users []

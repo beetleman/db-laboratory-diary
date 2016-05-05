@@ -2,6 +2,7 @@
   (:require [db-laboratory-diary.tables :as tables]
             [db-laboratory-diary.events :as e]
             [db-laboratory-diary.form :as form]
+            [db-laboratory-diary.api :as api]
             [accountant.core :as accountant]
             [db-laboratory-diary.date :as date]
             [db-laboratory-diary.experiments :as experiments]
@@ -56,15 +57,32 @@
              :name (str "surface-" id)}
      text]]])
 
+(defn submit-all-mesurment-fn [state data]
+  (fn [e]
+    (api/api-post
+     state :my-experiment-saved
+     (str "experiments/"
+          (get-in @state [:my-experiment :id])
+          "/mesurments")
+     @data
+     {:handler-fn (fn [a k v]
+                    (if-let [error (:error v)]
+                      (assoc a :danger-msg error)
+                      (do
+                        (accountant/navigate! "/my-experiments")
+                        (assoc a :info-msg
+                               "Saved"))))})))
 
-(defn add-mesurment-surface-header [state surfaces table]
+
+(defn add-mesurment-surface-header [state data table]
   [:div {:class "panel panel-default"}
    [:div {:class "panel-heading"}
     "Mesurments"
     [:div.pull-right
      [:button {:class "btn btn-success btn-xs"
-               :on-click (fn [e] (logger/debug :save e))
-               :disabled (not= (count surfaces) (count (keys @state)))}
+               :on-click (submit-all-mesurment-fn state data)
+               :disabled (not= (count (get-in @state [:my-experiment :surfaces]))
+                               (count (keys @data)))}
       "Save"]]]
    table])
 
@@ -81,11 +99,12 @@
 
 (defn add-mesurment [state colls]
   (let [data (r/atom {})
-        surfaces (get-in @state [:my-experiment :surfaces])
+        experiment (:my-experiment @state)
+        surfaces (:surfaces experiment)
         rows (partition-all colls surfaces)]
     [add-mesurment-surface-header
+     state
      data
-     surfaces
      [:table.table.table-bordered
       [:tbody
        (map-indexed
